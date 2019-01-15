@@ -1,6 +1,6 @@
 # Machine Learning Review 
 
-Han Sun
+Han Sun, Ph.D. in Earthquake Engineering, M.S. in Statistics, UCLA
 
 ## Learning Theory
 
@@ -24,13 +24,15 @@ The generalization error is then defined as:
 
 $$G = I[f_n] - I_S[f_n]$$
 
-Overfitting indicates that $I_S[f_n]$ is small but $I[f_n]$ is large, $f_n$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) $.
+Overfitting indicates that $I_S[f_n]​$ is small but $I[f_n]​$ is large, $f_n​$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) ​$.
 
 ### KL-Divergence
 
-### Shannon entropy
+$D_{KL}(P||Q) = -\sum_{x\in X}P(x)log\bigg(\frac{Q(x)}{P(x)}\bigg)$
 
+### Shannon Entropy
 
+$H(X) = E\big[-log(P(X)\big]$
 
 ### Bayesian vs. Frequentist
 
