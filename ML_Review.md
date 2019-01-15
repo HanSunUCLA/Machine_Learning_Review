@@ -6,11 +6,33 @@ Han Sun
 
 ### Bias vs. Variance
 
+High bias, underfitting; high variance, overfitting, high model complexity
+
 ### Empirical Risk Minimization
 
 ### Training Error and Generalization Error
 
+Let $f(x)$ be the prediction model which maps from $x$ to $y$, $L(\cdot, \cdot)$ be a loss measure, the expected error of a particular model $f_n(x)$ is defined over all possible values of $x$ and $y$:  
+
+$I[f_n] = \int_{X \times Y} L(f_n(x), y)p(x, y)dxdy$ 
+
+Without knowing the joint probability of $p(x, y)$, we can only compute the empirical error over training dataset:
+
+$$I_S[f_n] = \frac{1}{n}\sum_{i=1}^{n}L(f_n(x_i), y_i)$$
+
+The generalization error is then defined as:
+
+$$G = I[f_n] - I_S[f_n]$$
+
+Overfitting indicates that $I_S[f_n]$ is small but $I[f_n]$ is large, $f_n$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) $.
+
 ### KL-Divergence
+
+### Shannon entropy
+
+
+
+### Bayesian vs. Frequentist
 
 
 
@@ -25,7 +47,7 @@ Han Sun
 
 Ways to detect: training/testing split
 
-- Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO, ridge, random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer
+- Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer
 - Data-wise: 1) add more data; 2) use data augmentation (deep learning)
 - Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights
 
@@ -35,9 +57,17 @@ Ways to detect: training/testing split
 - Cluster based: use k-mans to cluster data. Exclude data points that are too far away from its centroid. 
 - Use robust models such as LASSO, ridge and decision tree.
 
-### Model and Feature Selection
+### Feature Selection
+
+### Model Selection
+
+### Model Evaluation
 
 
+
+#### Logistic Regression vs. SVMs
+
+ The fundamental difference is that SVM minimizes hinge loss while logistic regression minimizes logistic loss which implies: 1) logistic loss diverges faster than hinge loss. So, in general, it will be more sensitive to outliers; 2) logistic loss does not go to zero even if the point is classified sufficiently confidently. This might lead to minor degradation in accuracy. Try logistic regression first and see how you do with that simpler model. If logistic regression fails and you have reason to believe your data won’t be linearly separable, try an SVM with a non-linear kernel like a Radial Basis Function (RBF).
 
 ## Mostly Used models
 
@@ -72,6 +102,26 @@ It can also be used to evaluate feature importance. To measure the importance of
 For linearly separable data, we can select two parallel hyperplanes that separate the two classes of data, so that the distance between them is as large as possible. The region bounded by these two hyperplanes is called the "margin", and the maximum-margin hyperplane is the hyperplane that lies halfway between them, geometrically as: $max \frac{2}{|w|}$
 
 For non-separable data, use a soft-margin, namely hinge loss: $min \bigg[ \frac{1}{n}\sum_{i=1}^{n}max(0, 1-y_i(w^Tx_i-b))\bigg]+\lambda|w|^2$, parameter  $\lambda$  determines the trade-off between increasing the margin size an sure each data point lies at its correct region. Thus with a small enough $\lambda$ the model is similar to hard-margin SVM.
+
+**large margin classifier**: the largest margin is found in order to avoid overfitting in SVM by maximizing the distance between neg. and pos. samples.
+
+**$C$ in SVM**: regularization constant (inverse of $\lambda$ in ridge). For large values of C, the optimization will choose a smaller-margin hyperplane if that hyperplane does a better job of getting all the training points classified correctly. Conversely, a very small value of C will cause the optimizer to look for a larger-margin separating hyperplane, even if that hyperplane misclassifies more points.
+
+**Use of Kernel**: SVM extends by using kernel tricks, transforming datasets into rich features space, so that complex problems can be still dealt with in the same “linear” fashion in the lifted hyper space. The time complexity of kernel methods scales with the number of training points, since you effectively learn a weight for each training point. SVMs have the nice mathematical property that most of those weights end up being zero, so you only have to keep around the examples with nonzero weights, i.e., the support vectors. That makes them more practical on larger datasets. 
+
+**$\sigma$ in KSVM**: with lower $\sigma$ values, the model overfits, with higher $\sigma$ the model underfits. 
+
+### Naïve Bayes Classifier
+
+It is a probabilistic classifier based on applying Bayes' theorem and a strong assumption that all features are independent. 
+
+A class's prior, $P(male)$, may be calculated by assuming equiprobable classes, or by calculating an estimate for the class probability from the training set (i.e., (prior for a given class) = (number of samples in the class) / (total number of samples)). The assumptions on distributions of features are called the event model of the Naive Bayes classifier: $P(X_1=x|male) = \frac{1}{\sqrt 2\pi \sigma^2} exp\bigg( \frac{-(x-\mu)^2}{2\sigma^2}\bigg)$
+
+For example, $posterior(male|X) = \frac{P(male)\times P(X_1|male) \times P(X_2|male)}{P(X)}$
+
+### Principle Component Analysis
+
+Rotate the data to project the original feature into a new space where all features are orthogonal and features are ranked by maximum variance. $X_{n\times p}$, $(X^{T}X)_{p\times p}$, therefore the features can be at most p.
 
 ### K-Means
 
@@ -112,23 +162,41 @@ An unsupervised classification clustering method. Points are classified as core 
 
 A cluster then satisfies two properties: 1) all points within the cluster are mutually density-connected; 2) if a point is density-reachable from any point of the cluster, it is part of the cluster as well.
 
-### Naive Bayes Classifier
+### EM-algorithm 
 
-It is a probabilistic classifier based on applying Bayes' theorem and a strong assumption that all features are independent. 
 
-A class's prior, $P(male)$, may be calculated by assuming equiprobable classes, or by calculating an estimate for the class probability from the training set (i.e., (prior for a given class) = (number of samples in the class) / (total number of samples)). The assumptions on distributions of features are called the event model of the Naive Bayes classifier: $P(X_1=x|male) = \frac{1}{\sqrt 2\pi \sigma^2} exp\bigg( \frac{-(x-\mu)^2}{2\sigma^2}\bigg)$
 
-For example, $posterior(male|X) = \frac{P(male)\times P(X_1|male) \times P(X_2|male)}{P(X)}$
 
-### PCA
-
-Rotate the data to project the original feature into a new space where all features are orthogonal and features are ranked by maximum variance. $X_{n\times p}$, $(X^{T}X)_{p\times p}$, therefore the features can be at most p.
 
 ## Computer Vision
 
 ### Convolutional Neural Network
 
 ### AdaBoost for Face Recognition
+
+
+
+## Natural Language Processing
+
+
+
+## Statistics
+
+### Binomial Distribution
+
+
+
+### Bernoulli distribution
+
+
+
+### Mean
+
+Sample mean, $\overline{x} = \frac{1}{n}\sum_{i=1}^{n}x_i$ for a random subset of entire population; population mean, $\mu = \frac{1}{n}\sum_{i=1}^{N}x_i$for entire population. 
+
+ 
+
+
 
 
 
