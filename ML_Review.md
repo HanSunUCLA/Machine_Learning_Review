@@ -2,12 +2,26 @@
 
 Han Sun
 
-## Deal with Missing Data
+## Learning Theory
+
+### Bias vs. Variance
+
+### Empirical Risk Minimization
+
+### Training Error and Generalization Error
+
+### KL-Divergence
+
+
+
+## Practical Procedures
+
+### Deal with Missing Data
 
 - Remove missing data rows
 - Impute missing values: 1) use a constant value to distinguish missing for missing features, such as 0; 2) use a randomly sampled value based on this feature's distribution; 3) use a mean, median or mode value of this feature; 4) use a value predicted by another model
 
-## Deal with Overfitting
+### Deal with Overfitting
 
 Ways to detect: training/testing split
 
@@ -15,11 +29,15 @@ Ways to detect: training/testing split
 - Data-wise: 1) add more data; 2) use data augmentation (deep learning)
 - Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights
 
-## Identify Outliers
+### Identify Outliers
 
 - Extreme value analysis: plot the histogram of individual features and exclude data points that is 3 standard deviation away if the data is Gaussian like. 
 - Cluster based: use k-mans to cluster data. Exclude data points that are too far away from its centroid. 
 - Use robust models such as LASSO, ridge and decision tree.
+
+### Model and Feature Selection
+
+
 
 ## Mostly Used models
 
@@ -109,6 +127,8 @@ Rotate the data to project the original feature into a new space where all featu
 ## Computer Vision
 
 ### Convolutional Neural Network
+
+### AdaBoost for Face Recognition
 
 
 
