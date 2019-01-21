@@ -10,6 +10,12 @@ High bias, underfitting; high variance, overfitting, high model complexity
 
 ### Empirical Risk Minimization
 
+Let the hypothesis be: $h: X\to Y$, the risk associated with $h$ is $R(h) = E[L(h(x), y)] = \int L(h(x), y)dP(x, y)$. The goal is to find a hypothesis $h^{*}$ which minimizes it. The empirical risk minimization is defined over a set of training data:
+
+$R_{emp}(h) = \frac{1}{n}\sum_{i=1}^{n}L(h(x_i), y_i)$
+
+Instead of finding $h^{*}$, find: $\hat{h}$
+
 ### Training Error and Generalization Error
 
 Let $f(x)$ be the prediction model which maps from $x$ to $y$, $L(\cdot, \cdot)$ be a loss measure, the expected error of a particular model $f_n(x)$ is defined over all possible values of $x$ and $y$:  
@@ -24,11 +30,13 @@ The generalization error is then defined as:
 
 $$G = I[f_n] - I_S[f_n]$$
 
-Overfitting indicates that $I_S[f_n]​$ is small but $I[f_n]​$ is large, $f_n​$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) ​$.
+Overfitting indicates that $I_S[f_n]$ is small but $I[f_n]$ is large, $f_n$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) $.
 
 ### KL-Divergence
 
-$D_{KL}(P||Q) = -\sum_{x\in X}P(x)log\bigg(\frac{Q(x)}{P(x)}\bigg)$
+Discrete case: $D_{KL}(P||Q) = -\sum_{x\in X}P(x)log\bigg(\frac{Q(x)}{P(x)}\bigg)$
+
+Continuous case: $D_{KL}(P||Q) = \int_{-\infin}^{\infin} p(x)log\bigg(\frac{p(x)}{q(x)}\bigg) dx$
 
 ### Shannon Entropy
 
@@ -36,7 +44,9 @@ $H(X) = E\big[-log(P(X)\big]$
 
 ### Bayesian vs. Frequentist
 
+**Frequentist:** Sampling is infinite and decision rules can be sharp. Data are a repeatable random sample - there is a frequency. Underlying parameters are fixed i.e. they remain constant during this repeatable sampling process.
 
+**Bayesian:** Unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
 
 ## Practical Procedures
 
@@ -50,8 +60,8 @@ $H(X) = E\big[-log(P(X)\big]$
 Ways to detect: training/testing split
 
 - Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer
-- Data-wise: 1) add more data; 2) use data augmentation (deep learning)
-- Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights
+- Data-wise: add more data;
+- Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights; 4) use data augmentation
 
 ### Identify Outliers
 
@@ -59,13 +69,44 @@ Ways to detect: training/testing split
 - Cluster based: use k-mans to cluster data. Exclude data points that are too far away from its centroid. 
 - Use robust models such as LASSO, ridge and decision tree.
 
+### Curse of Dimensionality
+
+The distance measure increases as number of dimension grows and the feature space becomes sparse. The effects include: 1) the resulting lower data density requires more observations to keep the average distance between data points the same. In other words, supervised learning becomes more difficult because predictions for new samples are less likely to be based on learning from similar training features; 2) the variance increases as they get more opportunity to overfit to noise in more dimensions, resulting in poor generalization performance.
+
+**Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space
+
+To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data).  
+
+### Is the Coin Flipping Fair?
+
+Suppose the coin is tossed 10 times and 8 heads are observed:
+
+**P-value approach**: $H_0$: null hypothesis, $p=0.5$, $H_1$: alternative hypothesis, $p > 0.5$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055$. If we define the "small" be $\alpha=0.05$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5$ which you need to do a two tail test. 
+
+If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
+
 ### Feature Selection
+
+We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
+
+**F-test**: 
 
 ### Model Selection
 
 ### Model Evaluation
 
+Classification: confusion matrix, $precision=\frac{TP}{TP+FP}$, recall
 
+#### A/B Test and Hypothesis Testing
+
+In hypothesis testing, the null hypothesis is assumed to be true, and unless the test shows overwhelming evidence that the null hypothesis is not true, the null hypothesis is accepted.
+
+|                             | $H_0$ is in fact true | $H_0$ is in fact false |
+| --------------------------- | --------------------- | ---------------------- |
+| Test decides $H_0$ is true  | Correct               | Type II error          |
+| Test decides $H_0$ is false | Type I error          | Correct                |
+
+P-value is type I error. Probability of a type I error can be held at some (preferably small level) while decreasing the probability of a type II error by increasing the sample size. 
 
 #### Logistic Regression vs. SVMs
 
@@ -89,7 +130,15 @@ Pro: easy to understand, have value even with small amount of data and is a whit
 
 Con: unstable, very high variance depending on training data. it is often inaccurate.
 
-### Bagging
+### Gradient Boosting (sequential)
+
+**Compared to Ada-Boost**: a generalized version of Ada-Boost. The difference is that it does not have a particular loss function, any differentiable loss function works. Decision trees are used as weak learners. In Ada-Boost, only one stamp trees are used. In GB, more stamps tree is supported. 
+
+The predictions of each tree are added together sequentially. After calculating the loss, to perform the gradient descent procedure, we must add a tree to the model that reduces the loss (i.e. follow the gradient). We do this by parameterizing the tree, then modify the parameters of the tree and move in the right direction by reducing the residual loss.The contribution of each tree to this sum can be weighted to slow down the learning by the algorithm. This weighting is called a shrinkage or a learning rate.
+
+**Compared to logistic regression**: if all features are binary, they are equivalent with large dataset. A single gradient boosting decision stump is: $S=\sum_{i=1}^{n}(a_i-b_i)x_i+b_i$which is equal to $S=c_0+\sum_{i=1}^{n}c_ix_i$ , which is exactly the logit of logistic regression. If cross-entropy loss is used for GB, then they are the same if the number of stumps in GB is large enough. GB is robust against multilinearity though logistic regression doesn't.  
+
+### Bagging (parallel)
 
 Among all those training examples, randomly pick a subset from them with replacement and train decision tree for B times (usually called bootstrap aggregating). The final model is evaluated by averaging prediction of all B trees (regression) or majority vote (classification). 
 
@@ -125,6 +174,14 @@ For example, $posterior(male|X) = \frac{P(male)\times P(X_1|male) \times P(X_2|m
 
 Rotate the data to project the original feature into a new space where all features are orthogonal and features are ranked by maximum variance. $X_{n\times p}$, $(X^{T}X)_{p\times p}$, therefore the features can be at most p.
 
+### Linear Discriminative Analysis
+
+
+
+### Gaussian Mixture Model
+
+
+
 ### K-Means
 
 Unsupervised learning, a variant of generalized EM-algorithm.
@@ -155,7 +212,7 @@ How to improve: make it inversely weighted by distance to overcome skew data dis
 
 ### DBSCAN
 
-An unsupervised classification clustering method. Points are classified as core points, density-reachable points and outliers.
+An unsupervised classification density based clustering method. Points are classified as core points, density-reachable points and outliers.
 
 1. A point p is a core point if at least minPts points are within distance ε (ε is the maximum radius of the neighborhood from p) of it (including p). Those points are said to be *directly reachable* from p;
 2. A point q is directly reachable from p if point q is within distance ε from point p and p must be a core point;
@@ -197,6 +254,16 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 Sample mean, $\overline{x} = \frac{1}{n}\sum_{i=1}^{n}x_i$ for a random subset of entire population; population mean, $\mu = \frac{1}{n}\sum_{i=1}^{N}x_i$for entire population. 
 
  
+
+## Open Ended Questions
+
+### How would you measure how much users liked videos?
+
+
+
+### Article classification to be news
+
+
 
 
 
