@@ -89,13 +89,21 @@ If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 
 
 We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
 
-**F-test**: 
+**F-test**: on regression setting it is used to determine individual feature importance as defined by $F_j=\frac{explained\;variance}{unexplained\;variance}= \frac{\frac{RSS_1-RSS_2}{p_2-p_1}}{\frac{RSS_1}{n-p_1}}$, where model 1 has only intercept as predictors and model 2 has the jth feature. F will have an F-distribution with $(p_2-p_1, n-p_2)$ degree of freedom.  he null hypothesis is rejected if the *F* calculated from the data is greater than the critical value of the *F*-distribution for some desired false-rejection probability (e.g. 0.05). In my kernel paper, I adopted a straight forward formula:
+
+$\rho_j = \frac{(X_j-\bar{X_j})(Y-\bar{Y})}{\sqrt{var(X_j)var(Y)}}$
+
+$F_j=\frac{2\rho_j}{1-2\rho_j}(N-1)$
 
 ### Model Selection
 
+
+
 ### Model Evaluation
 
-Classification: confusion matrix, $precision=\frac{TP}{TP+FP}$, recall
+Classification: confusion matrix, $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$
+
+Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
 #### A/B Test and Hypothesis Testing
 
@@ -180,7 +188,25 @@ Rotate the data to project the original feature into a new space where all featu
 
 ### Gaussian Mixture Model
 
+GMM is tried to model the dataset as a mixture of several Gaussian distributions. Suppose there are K clusters, so $\mu$ and $\Sigma$ is also estimated for each k. Had it been only one distribution, they would have been estimated by **maximum-likelihood method**. But since there are K such clusters and the probability density is defined as a linear function of densities of all these K distributions: 
 
+$p(X) = \sum_{k=1}^{K}\pi_{k}G(X|\mu_k,\Sigma_k)$, where $\pi_k$ is the mixing coefficient for k-th distribution.
+
+To estimate the parameters by maximizing log-likelihood, $p(X|\mu, \Sigma, \pi)$:
+
+$ln(p(X|\mu, \Sigma, \pi)) = \sum_{i=1}^{N}ln\sum_{k=1}^{K}\pi_kG(X_i|\mu_k,\Sigma_k)$
+
+Taking derivative of the above respect to each parameter would give us the model, but there is no close form. So EM has to be used. 
+
+### EM-Algorithm 
+
+The Expectation-Maximization (EM) algorithm is an iterative way to find maximum-likelihood estimates for model parameters when the data is incomplete or has some missing data points or has some hidden variables. EM chooses some random values for the missing data points and estimates a new set of data. These new values are then recursively used to estimate a better first data, by filling up missing points, until the values get fixed.
+
+**E step**: 1) initialize $\mu_k$, $\Sigma_k$ and $\pi_k$ by some random values, or by K means clustering results or by hierarchical clustering results; 2) then for those given parameter values, estimate the value of the latent variables such as $\gamma_k$.
+
+**M step**: update the values of the parameters, $\mu_k$, $\Sigma_k$ and $\pi_k$ calculated by the derivative expressions in maximizing likelihood. 
+
+**End criteria**: if the log-likelihood value converges to some value then stop.
 
 ### K-Means
 
@@ -221,8 +247,6 @@ An unsupervised classification density based clustering method. Points are class
 
 A cluster then satisfies two properties: 1) all points within the cluster are mutually density-connected; 2) if a point is density-reachable from any point of the cluster, it is part of the cluster as well.
 
-### EM-algorithm 
-
 
 
 
@@ -243,17 +267,27 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 ### Binomial Distribution
 
-
+$P(X=k)=\begin{pmatrix}n\\k\end{pmatrix}p^k(1-p)^{n-k}$, $mean=np$, $variance=np(1-p)$ 
 
 ### Bernoulli distribution
 
-
+$P(X=1)=p$, $P(X=0)=1-p$, essentially a Binomial distribution with $n=1$
 
 ### Mean
 
 Sample mean, $\overline{x} = \frac{1}{n}\sum_{i=1}^{n}x_i$ for a random subset of entire population; population mean, $\mu = \frac{1}{n}\sum_{i=1}^{N}x_i$for entire population. 
 
- 
+### Simulation
+
+**Multivariate Normal**: 
+
+Let $$\sigma^2=\begin{bmatrix} \sigma_1^2 & \rho\sigma_1\sigma_2\\\rho\sigma_1\sigma_2& \sigma_2^2 \end{bmatrix}$$, $\mu=\begin{bmatrix}\mu_1\\\mu_2\end{bmatrix}$, and $z=\begin{bmatrix}z_1\\z_2\end{bmatrix}$from sampling standard Normal distribution, then we have:
+
+$M=chol(\sigma^2)^T$, $b=(M Z)^T + \mu^T$
+
+## Time Series 
+
+
 
 ## Open Ended Questions
 
