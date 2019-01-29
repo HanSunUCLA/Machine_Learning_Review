@@ -1,6 +1,8 @@
 # Machine Learning Review 
 
-Han Sun, Ph.D. in Earthquake Engineering, M.S. in Statistics, UCLA
+Han Sun, Ph.D. in Earthquake and Structural Engineering, M.S. in Statistics, University of California, Los Angeles
+
+
 
 ## Learning Theory
 
@@ -14,7 +16,7 @@ Let the hypothesis be: $h: X\to Y$, the risk associated with $h$ is $R(h) = E[L(
 
 $R_{emp}(h) = \frac{1}{n}\sum_{i=1}^{n}L(h(x_i), y_i)$
 
-Instead of finding $h^{*}$, find: $\hat{h}$
+Instead of finding $h^{*}​$, find: $\hat{h}​$
 
 ### Training Error and Generalization Error
 
@@ -30,7 +32,7 @@ The generalization error is then defined as:
 
 $$G = I[f_n] - I_S[f_n]$$
 
-Overfitting indicates that $I_S[f_n]$ is small but $I[f_n]$ is large, $f_n$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) $.
+Overfitting indicates that $I_S[f_n]​$ is small but $I[f_n]​$ is large, $f_n​$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) ​$.
 
 ### KL-Divergence
 
@@ -40,13 +42,17 @@ Continuous case: $D_{KL}(P||Q) = \int_{-\infin}^{\infin} p(x)log\bigg(\frac{p(x)
 
 ### Shannon Entropy
 
-$H(X) = E\big[-log(P(X)\big]$
+$H(X) = E\big[-log(P(X)\big]​$
 
 ### Bayesian vs. Frequentist
 
 **Frequentist:** Sampling is infinite and decision rules can be sharp. Data are a repeatable random sample - there is a frequency. Underlying parameters are fixed i.e. they remain constant during this repeatable sampling process.
 
 **Bayesian:** Unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
+
+### Why big data works?
+
+
 
 ## Practical Procedures
 
@@ -75,19 +81,19 @@ The distance measure increases as number of dimension grows and the feature spac
 
 **Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space
 
-To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data).  
+To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i​$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}​$(better for imbalanced data).  
 
 ### Is the Coin Flipping Fair?
 
 Suppose the coin is tossed 10 times and 8 heads are observed:
 
-**P-value approach**: $H_0$: null hypothesis, $p=0.5$, $H_1$: alternative hypothesis, $p > 0.5$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055$. If we define the "small" be $\alpha=0.05$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5$ which you need to do a two tail test. 
+**P-value approach**: $H_0​$: null hypothesis, $p=0.5​$, $H_1​$: alternative hypothesis, $p > 0.5​$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055​$. If we define the "small" be $\alpha=0.05​$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5​$ which you need to do a two tail test. 
 
-If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
+If $H_1​$ is changed to $p=0.7​$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617​$
 
 ### Feature Selection
 
-We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
+We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X​$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
 
 **F-test**: on regression setting it is used to determine individual feature importance as defined by $F_j=\frac{explained\;variance}{unexplained\;variance}= \frac{\frac{RSS_1-RSS_2}{p_2-p_1}}{\frac{RSS_1}{n-p_1}}$, where model 1 has only intercept as predictors and model 2 has the jth feature. F will have an F-distribution with $(p_2-p_1, n-p_2)$ degree of freedom.  he null hypothesis is rejected if the *F* calculated from the data is greater than the critical value of the *F*-distribution for some desired false-rejection probability (e.g. 0.05). In my kernel paper, I adopted a straight forward formula:
 
@@ -124,13 +130,17 @@ P-value is type I error. Probability of a type I error can be held at some (pref
 
 ### Logistic Regression
 
-$log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)$ . The decisions boundary of it is 0.5.Cost function is cross-entropy: $$J(\beta) = -\frac{1}{m}\sum_{i=1}^{m}[ y^{i}log(h_{\beta}(X^{i}) + (1-y^{i}log(1-h_{\beta}(X^{i}))]$$
+$log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X​$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)​$ . The decisions boundary of it is 0.5. 
 
-It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. 
+Loss function is logistic loss: $$argmin\sum_{i}L(y_i, f(x_i))​$$, where $L(y,f(x))=log\bigg(1+e^{-yf(x)}\bigg)​$
 
-Pros: very efficient for large amount of data solving by gradient descent
+It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizer by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2​$.
 
-Cons: need lots of data to scale well
+Pros: very efficient for large amount of data solving by gradient descent;
+
+Cons: need lots of data to scale well.
+
+**Multi-class logistic regression**: applying a soft-max activation function as classifier would change binary logistic regression to multiclass. The loss function becomes cross-entropy loss.
 
 ### Decision Tree
 
@@ -247,6 +257,8 @@ An unsupervised classification density based clustering method. Points are class
 
 A cluster then satisfies two properties: 1) all points within the cluster are mutually density-connected; 2) if a point is density-reachable from any point of the cluster, it is part of the cluster as well.
 
+### Gaussian Process Regression
+
 
 
 
@@ -285,6 +297,12 @@ Let $$\sigma^2=\begin{bmatrix} \sigma_1^2 & \rho\sigma_1\sigma_2\\\rho\sigma_1\s
 
 $M=chol(\sigma^2)^T$, $b=(M Z)^T + \mu^T$
 
+**Multinomial**:
+
+The probability mass function is: $f(x_1, x_2, ...x_k)=\frac{n!}{x_1!x_2!...x_k!}p_1^{x_1}p_2^{x_2}\times...p_k^{x_k}$
+
+Various methods may be used to simulate a multinomial distribution. A very simple one is to use a random number generator to generate numbers between 0 and 1. First, we divide the interval from 0 to 1 in *k* subintervals equal in size to the probabilities of the *k* categories. Then, we generate a random number for each of n trials and use a **binary search** to classify the virtual measure or observation in one of the categories. 
+
 ## Time Series 
 
 
@@ -295,7 +313,13 @@ $M=chol(\sigma^2)^T$, $b=(M Z)^T + \mu^T$
 
 
 
-### Article classification to be news
+### How to build a  news classifier for articles? 
+
+
+
+### How does Facebook news feed work?
+
+
 
 
 
