@@ -22,11 +22,11 @@ Instead of finding $h^{*}​$, find: $\hat{h}​$
 
 Let $f(x)$ be the prediction model which maps from $x$ to $y$, $L(\cdot, \cdot)$ be a loss measure, the expected error of a particular model $f_n(x)$ is defined over all possible values of $x$ and $y$:  
 
-$I[f_n] = \int_{X \times Y} L(f_n(x), y)p(x, y)dxdy$ 
+$I[f_n] = \int_{X \times Y} L(f_n(x), y)p(x, y)dxdy​$ 
 
 Without knowing the joint probability of $p(x, y)$, we can only compute the empirical error over training dataset:
 
-$$I_S[f_n] = \frac{1}{n}\sum_{i=1}^{n}L(f_n(x_i), y_i)$$
+$$I_S[f_n] = \frac{1}{n}\sum_{i=1}^{n}L(f_n(x_i), y_i)​$$
 
 The generalization error is then defined as:
 
@@ -46,9 +46,9 @@ $H(X) = E\big[-log(P(X)\big]​$
 
 ### Bayesian vs. Frequentist
 
-**Frequentist:** Sampling is infinite and decision rules can be sharp. Data are a repeatable random sample - there is a frequency. Underlying parameters are fixed i.e. they remain constant during this repeatable sampling process.
+**Frequentist:** sampling is infinite and decision rules can be sharp. Data are a repeatable random sample - there is a frequency. Underlying parameters are fixed i.e. they remain constant during this repeatable sampling process.
 
-**Bayesian:** Unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
+**Bayesian:** unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
 
 ### Why big data works?
 
@@ -66,8 +66,8 @@ $H(X) = E\big[-log(P(X)\big]​$
 Ways to detect: training/testing split
 
 - Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer
-- Data-wise: add more data;
-- Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights; 4) use data augmentation
+- Data-wise: add more data which can be explained by VC-dimension;
+- Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights; 4) use data augmentation (for images)
 
 ### Identify Outliers
 
@@ -95,7 +95,7 @@ If $H_1​$ is changed to $p=0.7​$, we can calculate the type II error. $p=1 -
 
 We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X​$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
 
-**F-test**: on regression setting it is used to determine individual feature importance as defined by $F_j=\frac{explained\;variance}{unexplained\;variance}= \frac{\frac{RSS_1-RSS_2}{p_2-p_1}}{\frac{RSS_1}{n-p_1}}$, where model 1 has only intercept as predictors and model 2 has the jth feature. F will have an F-distribution with $(p_2-p_1, n-p_2)$ degree of freedom.  he null hypothesis is rejected if the *F* calculated from the data is greater than the critical value of the *F*-distribution for some desired false-rejection probability (e.g. 0.05). In my kernel paper, I adopted a straight forward formula:
+**F-test**: on regression setting it is used to determine individual feature importance as defined by $F_j=\frac{explained\;variance}{unexplained\;variance}= \frac{\frac{RSS_1-RSS_2}{p_2-p_1}}{\frac{RSS_1}{n-p_1}}$, where model 1 has only intercept as predictors and model 2 has the jth feature. F will have an F-distribution with $(p_2-p_1, n-p_2)$ degree of freedom.  The null hypothesis is rejected if the *F* calculated from the data is greater than the critical value of the *F*-distribution for some desired false-rejection probability (e.g. 0.05). In my kernel paper, I adopted a straight forward formula:
 
 $\rho_j = \frac{(X_j-\bar{X_j})(Y-\bar{Y})}{\sqrt{var(X_j)var(Y)}}$
 
@@ -107,9 +107,9 @@ $F_j=\frac{2\rho_j}{1-2\rho_j}(N-1)$
 
 ### Model Evaluation
 
-Classification: confusion matrix, $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$
+Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$
 
-Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
+Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2​$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
 #### A/B Test and Hypothesis Testing
 
@@ -248,7 +248,7 @@ How to improve: make it inversely weighted by distance to overcome skew data dis
 
 ### DBSCAN
 
-An unsupervised classification density based clustering method. Points are classified as core points, density-reachable points and outliers.
+An unsupervised classification **density-based** clustering method. Points are classified as core points, density-reachable points and outliers.
 
 1. A point p is a core point if at least minPts points are within distance ε (ε is the maximum radius of the neighborhood from p) of it (including p). Those points are said to be *directly reachable* from p;
 2. A point q is directly reachable from p if point q is within distance ε from point p and p must be a core point;
@@ -305,7 +305,35 @@ Various methods may be used to simulate a multinomial distribution. A very simpl
 
 ## Time Series 
 
+## MCMC
 
+MCMC techniques are often applied to solve integration and optimization problems in large dimensional spaces. These two types of problem play a fundamental role in machine learning, physics, statistics, econometrics and decision analysis. Examples are:
+
+1. **Bayesian inference and learning**. Given some unknown variables $x ∈ X$ and data $y ∈ Y$, the following typically intractable integration problems are central to Bayesian statistics.
+
+   - **Normalization**. To obtain the posterior $p(x | y)$ given the prior $p(x)$ and likelihood $p(y | x),$ the normalizing factor in Bayes’ theorem needs to be computed
+
+     ​	$$p(x | y) = \frac{p(y|x)p(x)}{\int_{X}p(y|x')p(x')dx'}$$
+
+   - **Marginalization**. Given the joint posterior of $(x, z) \in X \times Z​$, we may often be interested in the marginal posterior
+
+     ​	$$p(x|y) = \int_Z p(x, z|y)dz$$
+
+   - **Expectation**. The objective of the analysis is often to obtain summary statistics of the form
+
+     ​	$$E_{p(x|y)}(f(x))=\int_X f(x)p(x|y)dx​$$
+
+     for some function of interest $f: X \to R^{f}​$ integrable with respect to $p(x|y)​$. 
+
+2. **Statistical mechanics**. Here, one needs to compute the partition function $Z​$ of a system with states $s​$ and Hamiltonian $E(s)​$
+
+   ​	$$Z= \sum\limits_{s}exp\bigg[-\frac{E(s)}{kT}\bigg]$$
+
+   where $k​$ is the Boltzmann's constant and T denotes the temperature of the system. Summing over the large number of possible configurations is prohibitively expensive. Note that the problems of computing the partition function and the normalizing constant in statistical inference are analogous.
+
+3. **Optimization**. The goal of optimization is to extract the solution that minimizes some objective function from a large set of feasible solutions. In fact, this set can be continuous and unbounded. In general, it is too computationally expensive to compare all the solutions to find out which one is optimal.
+
+4. **Penalized likelihood model selection**. This task typically involves two steps. First, one finds the maximum likelihood (ML) estimates for each model separately. Then one uses a penalization term (for example MDL, BIC or AIC) to select one of the models. The problem with this approach is that the initial set of models can be very large. Moreover, many of those models are of not interest and, therefore, computing resources are wasted.
 
 ## Open Ended Questions
 
@@ -320,6 +348,26 @@ Various methods may be used to simulate a multinomial distribution. A very simpl
 ### How does Facebook news feed work?
 
 
+
+## Advanced Problems
+
+### Ordinary Least Squares Related
+
+$\beta=(X^TX)^{-1}X^Ty​$
+
+```python
+# this is basic version
+beta = np.linalg.inv(np.transpose(X)*X)*np.transpose(X)*y
+# \ does LU decomposition which is faster than directly applying inverse
+beta = (np.transpose(X) * X) \  (np.transpose(X) * y) 
+# apply QR decomposition such that we do not have to calculate square of condition number
+q, r = np.linalg.qr(X)
+beta = r \ (np.transpose(q) * y)
+```
+
+For single $x​$ and $y​$, $\beta=corr(x, y)\frac{std(y)}{std(x)}​$, if we regress y on x, we get $\beta' = corr(x, y)\frac{std(x)}{std(y)}​$, the product $\beta \times \beta'​$ equals $corr(x, y)^2​$ rather than 1. 
+
+### Everything about Hadoop and MapReduce
 
 
 
