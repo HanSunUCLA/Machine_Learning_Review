@@ -103,13 +103,55 @@ $F_j=\frac{2\rho_j}{1-2\rho_j}(N-1)$
 
 ### Model Selection
 
+#### Training/Testing spilit
+
+The basic version to test model.
+
+#### Repeated holdout validation
+
+One way to obtain a more robust performance estimate that is less variant to how we split the data into training and test sets is to repeat the holdout method *k* times with different random seeds and compute the average performance over these *k* repetitions (In my thesis, I called this non-replacement Bootstrap):
+
+$ACC_{avg}=\frac{1}{k}\sum_{k}^{j=1}ACC_j$
+
+Where $ACC_j$ is the accuracy measure for each random seed: $ACC_{j}=1-\frac{1}{m}\sum_{i=1}^{m}L(y_i, \hat{y_i})$
+
+This repeated holdout procedure, sometimes also called *Monte Carlo Cross-Validation*, provides with a better estimate of how well our model may perform on a random test set, and it can also give us an idea about our model’s stability — how the model produced by a learning algorithm changes with different training set splits. 
+
+#### Boostrap
+
+1. We are given a dataset of size *n*;
+
+2. For *b* bootstrap rounds:
+
+   1. We draw one single instance from this dataset and assign it to our *j*th bootstrap sample. We repeat this step until our bootstrap sample has size *n* — the size of the original dataset. Each time, we draw samples from the same original dataset so that certain samples may appear more than once in our bootstrap sample and some not at all;
+
+3. We fit a model to each of the *b* bootstrap samples and compute the resubstitution accuracy;
+
+4. We compute the model accuracy as the average over the *b* accuracy estimates:
+
+   $ACC_{boot}=\frac{1}{b}\sum_{b}^{j=1}\frac{1}{n}\sum^{n}_{i=1}\big(1 - L(\hat{y_i}, y_i)\big)​$
+
+A slightly different approach to boostrapping using the so-called *Leave-One-Out Boostrap* technique. The *out-of-bag* samples are used as test sets for evaluation instead of directly using training data. The standard error can be calculated as:
+
+$SE_{boot}=\sqrt{\frac{1}{b-1}\sum_{i=1}^{b}(ACC_i-ACC_{boot})^2}$
+
+The confidence interval around the mean estimate is:
+
+$ACC_{boot}\pm t\times SE_{boot}$
+
+#### K-fold cross validation
+
+
+
+#### Nested cross-validation
+
 
 
 ### Model Evaluation
 
-Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$
+Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}​$, $recall=\frac{TP}{TP+FN}​$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}​$
 
-Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2​$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
+Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}​$; $R^2​$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
 #### A/B Test and Hypothesis Testing
 
@@ -359,7 +401,7 @@ $\beta=(X^TX)^{-1}X^Ty​$
 # this is basic version
 beta = np.linalg.inv(np.transpose(X)*X)*np.transpose(X)*y
 # \ does LU decomposition which is faster than directly applying inverse
-beta = (np.transpose(X) * X) \  (np.transpose(X) * y) 
+beta = (np.transpose(X) * X) \ (np.transpose(X) * y) 
 # apply QR decomposition such that we do not have to calculate square of condition number
 q, r = np.linalg.qr(X)
 beta = r \ (np.transpose(q) * y)
