@@ -16,23 +16,23 @@ Let the hypothesis be: $h: X\to Y$, the risk associated with $h$ is $R(h) = E[L(
 
 $R_{emp}(h) = \frac{1}{n}\sum_{i=1}^{n}L(h(x_i), y_i)$
 
-Instead of finding $h^{*}​$, find: $\hat{h}​$
+Instead of finding $h^{*}$, find: $\hat{h}$
 
 ### Training Error and Generalization Error
 
 Let $f(x)$ be the prediction model which maps from $x$ to $y$, $L(\cdot, \cdot)$ be a loss measure, the expected error of a particular model $f_n(x)$ is defined over all possible values of $x$ and $y$:  
 
-$I[f_n] = \int_{X \times Y} L(f_n(x), y)p(x, y)dxdy​$ 
+$I[f_n] = \int_{X \times Y} L(f_n(x), y)p(x, y)dxdy$ 
 
 Without knowing the joint probability of $p(x, y)$, we can only compute the empirical error over training dataset:
 
-$$I_S[f_n] = \frac{1}{n}\sum_{i=1}^{n}L(f_n(x_i), y_i)​$$
+$$I_S[f_n] = \frac{1}{n}\sum_{i=1}^{n}L(f_n(x_i), y_i)$$
 
 The generalization error is then defined as:
 
 $$G = I[f_n] - I_S[f_n]$$
 
-Overfitting indicates that $I_S[f_n]​$ is small but $I[f_n]​$ is large, $f_n​$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) ​$.
+Overfitting indicates that $I_S[f_n]$ is small but $I[f_n]$ is large, $f_n$ will perform well on the training set but not perform well on other data from the joint probability distribution $p(x, y) $.
 
 ### KL-Divergence
 
@@ -42,7 +42,7 @@ Continuous case: $D_{KL}(P||Q) = \int_{-\infin}^{\infin} p(x)log\bigg(\frac{p(x)
 
 ### Shannon Entropy
 
-$H(X) = E\big[-log(P(X)\big]​$
+$H(X) = E\big[-log(P(X)\big]$
 
 ### Bayesian vs. Frequentist
 
@@ -81,19 +81,19 @@ The distance measure increases as number of dimension grows and the feature spac
 
 **Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space
 
-To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i​$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}​$(better for imbalanced data).  
+To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data).  
 
 ### Is the Coin Flipping Fair?
 
 Suppose the coin is tossed 10 times and 8 heads are observed:
 
-**P-value approach**: $H_0​$: null hypothesis, $p=0.5​$, $H_1​$: alternative hypothesis, $p > 0.5​$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055​$. If we define the "small" be $\alpha=0.05​$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5​$ which you need to do a two tail test. 
+**P-value approach**: $H_0$: null hypothesis, $p=0.5$, $H_1$: alternative hypothesis, $p > 0.5$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055$. If we define the "small" be $\alpha=0.05$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5$ which you need to do a two tail test. 
 
-If $H_1​$ is changed to $p=0.7​$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617​$
+If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
 
 ### Feature Selection
 
-We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X​$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
+We need it to avoid **Multicollinearity**: one feature can be linearly predicted from the others with a substantial degree of accuracy resulting $X^T X$ not invertible. To detect, 1) large changes in the estimated regression coefficients when a predictor variable is added or deleted; 2) insignificant regression coefficients for the affected variables in the multiple regression, but a rejection of the joint hypothesis that those coefficients are all zero (use F-test to give score for each feature, one feature may have very high F-score but its coefficient in the multiple regression model is small); 3) look at correlation between features. 
 
 **F-test**: on regression setting it is used to determine individual feature importance as defined by $F_j=\frac{explained\;variance}{unexplained\;variance}= \frac{\frac{RSS_1-RSS_2}{p_2-p_1}}{\frac{RSS_1}{n-p_1}}$, where model 1 has only intercept as predictors and model 2 has the jth feature. F will have an F-distribution with $(p_2-p_1, n-p_2)$ degree of freedom.  The null hypothesis is rejected if the *F* calculated from the data is greater than the critical value of the *F*-distribution for some desired false-rejection probability (e.g. 0.05). In my kernel paper, I adopted a straight forward formula:
 
@@ -129,7 +129,7 @@ This repeated holdout procedure, sometimes also called *Monte Carlo Cross-Valida
 
 4. We compute the model accuracy as the average over the *b* accuracy estimates:
 
-   $ACC_{boot}=\frac{1}{b}\sum_{b}^{j=1}\frac{1}{n}\sum^{n}_{i=1}\big(1 - L(\hat{y_i}, y_i)\big)​$
+   $ACC_{boot}=\frac{1}{b}\sum_{b}^{j=1}\frac{1}{n}\sum^{n}_{i=1}\big(1 - L(\hat{y_i}, y_i)\big)$
 
 A slightly different approach to boostrapping using the so-called *Leave-One-Out Boostrap* technique. The *out-of-bag* samples are used as test sets for evaluation instead of directly using training data. The standard error can be calculated as:
 
@@ -149,9 +149,9 @@ $ACC_{boot}\pm t\times SE_{boot}$
 
 ### Model Evaluation
 
-Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}​$, $recall=\frac{TP}{TP+FN}​$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}​$
+Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$
 
-Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}​$; $R^2​$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
+Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
 #### A/B Test and Hypothesis Testing
 
@@ -172,11 +172,11 @@ P-value is type I error. Probability of a type I error can be held at some (pref
 
 ### Logistic Regression
 
-$log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X​$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)​$ . The decisions boundary of it is 0.5. 
+$log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)$ . The decisions boundary of it is 0.5. 
 
-Loss function is logistic loss: $$argmin\sum_{i}L(y_i, f(x_i))​$$, where $L(y,f(x))=log\bigg(1+e^{-yf(x)}\bigg)​$
+Loss function is logistic loss: $$argmin\sum_{i}L(y_i, f(x_i))$$, where $L(y,f(x))=log\bigg(1+e^{-yf(x)}\bigg)$
 
-It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizer by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2​$.
+It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizer by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2$.
 
 Pros: very efficient for large amount of data solving by gradient descent;
 
@@ -357,21 +357,21 @@ MCMC techniques are often applied to solve integration and optimization problems
 
      ​	$$p(x | y) = \frac{p(y|x)p(x)}{\int_{X}p(y|x')p(x')dx'}$$
 
-   - **Marginalization**. Given the joint posterior of $(x, z) \in X \times Z​$, we may often be interested in the marginal posterior
+   - **Marginalization**. Given the joint posterior of $(x, z) \in X \times Z$, we may often be interested in the marginal posterior
 
      ​	$$p(x|y) = \int_Z p(x, z|y)dz$$
 
    - **Expectation**. The objective of the analysis is often to obtain summary statistics of the form
 
-     ​	$$E_{p(x|y)}(f(x))=\int_X f(x)p(x|y)dx​$$
+     ​	$$E_{p(x|y)}(f(x))=\int_X f(x)p(x|y)dx$$
 
-     for some function of interest $f: X \to R^{f}​$ integrable with respect to $p(x|y)​$. 
+     for some function of interest $f: X \to R^{f}$ integrable with respect to $p(x|y)$. 
 
-2. **Statistical mechanics**. Here, one needs to compute the partition function $Z​$ of a system with states $s​$ and Hamiltonian $E(s)​$
+2. **Statistical mechanics**. Here, one needs to compute the partition function $Z$ of a system with states $s$ and Hamiltonian $E(s)$
 
    ​	$$Z= \sum\limits_{s}exp\bigg[-\frac{E(s)}{kT}\bigg]$$
 
-   where $k​$ is the Boltzmann's constant and T denotes the temperature of the system. Summing over the large number of possible configurations is prohibitively expensive. Note that the problems of computing the partition function and the normalizing constant in statistical inference are analogous.
+   where $k$ is the Boltzmann's constant and T denotes the temperature of the system. Summing over the large number of possible configurations is prohibitively expensive. Note that the problems of computing the partition function and the normalizing constant in statistical inference are analogous.
 
 3. **Optimization**. The goal of optimization is to extract the solution that minimizes some objective function from a large set of feasible solutions. In fact, this set can be continuous and unbounded. In general, it is too computationally expensive to compare all the solutions to find out which one is optimal.
 
@@ -395,7 +395,7 @@ MCMC techniques are often applied to solve integration and optimization problems
 
 ### Ordinary Least Squares Related
 
-$\beta=(X^TX)^{-1}X^Ty​$
+$\beta=(X^TX)^{-1}X^Ty$
 
 ```python
 # this is basic version
@@ -407,7 +407,15 @@ q, r = np.linalg.qr(X)
 beta = r \ (np.transpose(q) * y)
 ```
 
-For single $x​$ and $y​$, $\beta=corr(x, y)\frac{std(y)}{std(x)}​$, if we regress y on x, we get $\beta' = corr(x, y)\frac{std(x)}{std(y)}​$, the product $\beta \times \beta'​$ equals $corr(x, y)^2​$ rather than 1. 
+For single $x$ and $y$, $\beta=corr(x, y)\frac{std(y)}{std(x)}$, if we regress y on x, we get $\beta' = corr(x, y)\frac{std(x)}{std(y)}$, the product $\beta \times \beta'$ equals $corr(x, y)^2$ rather than 1. 
+
+### Bessel's Correction
+
+Due to the additional sample mean $\bar{x}$, we need to to correct sample variance calculation 
+
+The biased sample variance is:$s_n^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dots+(x_n-\bar{x})^2}{n}$
+
+The unbiased sample variance is: $s^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dots+(x_n-\bar{x})^2}{n-1}=\frac{\sum^{n}_{i=1}x_i^2}{n-1}-\frac{(\sum^{n}_{i=1}x_i)^2}{(n-1)n}=\bigg(\frac{n}{n-1}\bigg)s_n^2$
 
 ### Everything about Hadoop and MapReduce
 
