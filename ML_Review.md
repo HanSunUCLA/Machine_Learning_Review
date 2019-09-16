@@ -63,7 +63,7 @@ $H(X) = E\big[-log(P(X)\big]$
 
 ### Deal with Overfitting
 
-Ways to detect: training/testing split
+Ways to detect: training/testing split; large model weights in linear models can indicate that model is overfitted
 
 - Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer
 - Data-wise: add more data which can be explained by VC-dimension;
@@ -103,7 +103,7 @@ $F_j=\frac{2\rho_j}{1-2\rho_j}(N-1)$
 
 ### Model Selection
 
-#### Training/Testing spilit
+#### Training/Testing spilt
 
 The basic version to test model.
 
@@ -115,9 +115,9 @@ $ACC_{avg}=\frac{1}{k}\sum_{k}^{j=1}ACC_j$
 
 Where $ACC_j$ is the accuracy measure for each random seed: $ACC_{j}=1-\frac{1}{m}\sum_{i=1}^{m}L(y_i, \hat{y_i})$
 
-This repeated holdout procedure, sometimes also called *Monte Carlo Cross-Validation*, provides with a better estimate of how well our model may perform on a random test set, and it can also give us an idea about our model’s stability — how the model produced by a learning algorithm changes with different training set splits. 
+This repeated holdout procedure, sometimes also called *Monte Carlo Cross-Validation*, provides with a better estimate of how well our model may perform on a random test set, and it can also give us an idea about our model’s stability — how the model produced by a learning algorithm changes with different training set splits.  The downside of holdout is that it can give biased quality estimates for small samples and it is sensitive to the particular split of the sample into training and testing parts.
 
-#### Boostrap
+#### Bootstrap
 
 1. We are given a dataset of size *n*;
 
@@ -395,19 +395,46 @@ MCMC techniques are often applied to solve integration and optimization problems
 
 ### Ordinary Least Squares Related
 
-$\beta=(X^TX)^{-1}X^Ty$
+- To solve OLS, most straightforward way is to use close form solution, $\beta=(X^TX)^{-1}X^Ty$. However, there are a bunch of different approaches depending on the scale (n) and scope (p) of the problem.
 
-```python
-# this is basic version
-beta = np.linalg.inv(np.transpose(X)*X)*np.transpose(X)*y
-# \ does LU decomposition which is faster than directly applying inverse
-beta = (np.transpose(X) * X) \ (np.transpose(X) * y) 
-# apply QR decomposition such that we do not have to calculate square of condition number
-q, r = np.linalg.qr(X)
-beta = r \ (np.transpose(q) * y)
-```
+  ```python
+  # this is basic version
+  beta = np.linalg.inv(np.transpose(X)*X)*np.transpose(X)*y
+  # \ does LU decomposition which is faster than directly applying inverse
+  beta = (np.transpose(X) * X) \ (np.transpose(X) * y) 
+  # apply QR decomposition such that we do not have to calculate square of condition number
+  q, r = np.linalg.qr(X)
+  beta = r \ (np.transpose(q) * y)
+  ```
 
-For single $x$ and $y$, $\beta=corr(x, y)\frac{std(y)}{std(x)}$, if we regress y on x, we get $\beta' = corr(x, y)\frac{std(x)}{std(y)}$, the product $\beta \times \beta'$ equals $corr(x, y)^2$ rather than 1. 
+- In fact, one could always use gradient descent to avoid taking matrix inverse:
+
+  $\begin{align}
+  \frac{\partial L}{\partial w_j} &= \frac{\partial}{\partial w_j} \frac{1}{2n} \sum_{i=1}^{n} (y_i - \sum_{j=1}^{p}w_j x_{ij})^2 \\
+  &= \sum_{i=1}^{n}\bigg( -x_{ij} (y - \sum_{j=1}^{p}w_j x_{ij}) \bigg) \quad [\text{chain rule}] \\
+  \end{align}$
+
+  And update the weight by: $w_j^{t+1} = w_j^t - \eta \frac{\partial L}{\partial w_j} $
+
+- For single $x$ and $y$, $\beta=corr(x, y)\frac{std(y)}{std(x)}$, if we regress y on x, we get $\beta' = corr(x, y)\frac{std(x)}{std(y)}$, the product $\beta \times \beta'$ equals $corr(x, y)^2$ rather than 1. 
+
+### Gradient Descent
+
+- Regular methods: gradient descent, stochastic gradient descent, mini-batch stochastic gradient descent
+
+- Momentum variant: 
+
+  $h^t = \alpha h^{t-1} + \eta g^t$, $w^t=w^{t-1}-h^t$, usually $\alpha=0.9$. This is beneficial since momentum balances local sign changes of gradients
+
+- Nesterov momentum variant: calculate new momentum based new weight location
+
+  $h^t=\alpha h^{t-1} + \eta \nabla L(w^{t-1}-\alpha h^{t-1})$
+
+- Adaptive learning rate variant: as $G_j^t$ always increases, this leads to early stopping ($\epsilon$ is for preventing divided by zero)
+
+  $G_j^t=G_j^{t-1}+(\nabla L_j^t)^2$, $w_j^{t}=w_j^{t-1}-\frac{\eta}{\sqrt{G_j^t+\epsilon}}\nabla L^t_j$
+
+- Adam: combines both momentum and adaptive method
 
 ### Bessel's Correction
 
