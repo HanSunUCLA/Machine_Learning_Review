@@ -50,6 +50,12 @@ $H(X) = E\big[-log(P(X)\big]$
 
 **Bayesian:** unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
 
+### Precision Accuracy Recall and AUC
+
+**Precision vs Accuracy** : accuracy consists of trueness (proximity of measurement results to the true value) and precision (repeatability or reproducibility of the measurement) -> Precision measures the same as bias.
+
+
+
 ### Why big data works?
 
 
@@ -59,15 +65,15 @@ $H(X) = E\big[-log(P(X)\big]$
 ### Deal with Missing Data
 
 - Remove missing data rows
-- Impute missing values: 1) use a constant value to distinguish missing for missing features, such as 0; 2) use a randomly sampled value based on this feature's distribution; 3) use a mean, median or mode value of this feature; 4) use a value predicted by another model
+- Impute missing values: 1) use a constant value to distinguish missing for missing features, such as 0; 2) use a randomly sampled value based on this feature's distribution; 3) use a mean, median or mode value of this feature; 4) use a value predicted by another model.
 
 ### Deal with Overfitting
 
 Ways to detect: training/testing split; large model weights in linear models can indicate that model is overfitted
 
-- Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer
-- Data-wise: add more data which can be explained by VC-dimension;
-- Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights; 4) use data augmentation (for images)
+- Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer.
+- Data-wise: add more data which can be explained by VC-dimension.
+- Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights; 4) use data augmentation (for images); 5) batch normalization can also help reduce some overfitting.
 
 ### Identify Outliers
 
@@ -79,17 +85,21 @@ Ways to detect: training/testing split; large model weights in linear models can
 
 The distance measure increases as number of dimension grows and the feature space becomes sparse. The effects include: 1) the resulting lower data density requires more observations to keep the average distance between data points the same. In other words, supervised learning becomes more difficult because predictions for new samples are less likely to be based on learning from similar training features; 2) the variance increases as they get more opportunity to overfit to noise in more dimensions, resulting in poor generalization performance.
 
-**Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space
+**Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space.
 
-To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data).  
+To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data); 2) convert to neural network embeddings.
 
-### Is the Coin Flipping Fair?
+### Is the Coin Flipping Fair? and Coin Flipping
 
 Suppose the coin is tossed 10 times and 8 heads are observed:
 
 **P-value approach**: $H_0$: null hypothesis, $p=0.5$, $H_1$: alternative hypothesis, $p > 0.5$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055$. If we define the "small" be $\alpha=0.05$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5$ which you need to do a two tail test. 
 
 If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
+
+**Binomial Distribution**:
+
+
 
 ### Feature Selection
 
@@ -141,7 +151,7 @@ $ACC_{boot}\pm t\times SE_{boot}$
 
 #### K-fold cross validation
 
-
+This belongs to the ensemble strategies. Once all K training are done, the final prediction model could be an ensemble of all. 
 
 #### Nested cross-validation
 
@@ -286,7 +296,7 @@ How to improve: make it inversely weighted by distance to overcome skew data dis
 
 **Selection of k**: larger values of *k* reduces effect of the noise on the classification, but make boundaries between classes less distinct. 
 
-1-NN: the bias is low, because you fit your model only to the 1-nearest point. This means your model will be really close to your training data; the variance is high, because optimizing on only 1-nearest point means that the probability that you model the noise in your data is really high. Following your definition above, your model will depend highly on the subset of data points that you choose as training data. If you randomly reshuffle the data points you choose, the model will be dramatically different in each iteration. Basically very high model complexity.
+**1-NN**: the bias is low, because you fit your model only to the 1-nearest point. This means your model will be really close to your training data; the variance is high, because optimizing on only 1-nearest point means that the probability that you model the noise in your data is really high. Following your definition above, your model will depend highly on the subset of data points that you choose as training data. If you randomly reshuffle the data points you choose, the model will be dramatically different in each iteration. Basically very high model complexity.
 
 ### DBSCAN
 
@@ -308,6 +318,32 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 ## Computer Vision
 
 ### Convolutional Neural Network
+
+**Gradient vanishing and exploding**: the chain rule of gradient descent over deep neural networks requires that the outputs of all previous layers (output of activation function) multiply to passing gradient which leads to gradient vanishing and gradient exploding. 
+
+**Batch Normalization**: it essentially reduces internal covariance shifts. It is used to normalize the layer output at batch level (typically before nonlinear activation function such as Relu to avoid distribution change). It makes 1) model less sensitive to initial weights; 2) make the model landscape much smoother so large learning rate can be adopted; 3) it also helps with gradient vanishing as it normalizes the output such for sigmoid activation function to avoid small derivatives. It should not be used with drop-out.
+
+**Activation Function**: the **ReLU** , $f(z)=\max(0, z)$ is a best choice for activation function as it is easy to compute and does not saturate because $\lim_{z\rightarrow}f(z)=+\infin$ instead of 1 as compared to the sigmoid function; it also avoids gradient vanishing and exploding as the derivative of it is a constant and its output is not saturated (thus no small multiplier). The downside is so-called **dying ReLU** due to the output is always zero for negative inputs. Solution is **leakyReLU**, $f(z)=max(\alpha z, z)$.
+
+**Residual Block**: the residual block basically takes the input to a layer and directly adds it to the output of the activation resulting in a higher overall derivative of the block. 
+
+**Soft-max**: it applies the standard exponential function to each element of the input vector  and normalizes these values by dividing by the sum of all these exponentials; this normalization ensures that the sum of the components of the output vector is 1.
+
+**Weight Initialization**: 
+
+**Cross Entropy Loss**: $L=-\frac{1}{N}\sum^{n}_{i=1}t_i log(p_i)$ 
+
+**KL Divergence Loss**:
+
+**Hinge Loss**: $L=max(0,1-t*p)$
+
+**Optimization**:
+
+**Back propagation**: it follows from the use of the chain rule and product rule in differential calculus. Thus, the partial derivative of a weight is a product of the error term $\delta_j^k$ at node $ij$ in layer $k$, and the output $o_i^{k-1}$ of node  $i$ in layer $k-1$.
+
+**Adversarial attacks**: a small perturbation to the image causes the CNN model to have drastic changes in its prediction. To counter: 1) denoising inputs:  apply a denoising autoencoder that is trained by noisy/adversarial examples to reconstruct the image with no noise added; 2) verifying inputs: after denoising, add another classification layer to remove any potential remaining noisy images. It is important to keep diversity of the above two methods.
+
+
 
 ### AdaBoost for Face Recognition
 
@@ -446,9 +482,13 @@ The unbiased sample variance is: $s^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dot
 
 ### Everything about Hadoop and MapReduce
 
+### Back Propagation
 
+The time complexity of back propagation is $O(N)$ where $N$ is number of edges in the computation graph.
 
+### TensorFlow
 
+The built-up graph in Python is an object that can be consumed by tf.session() which deploys lower level GPU/CPU computing suite for fast parallel computing. 
 
 
 
