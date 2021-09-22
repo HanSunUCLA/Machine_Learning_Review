@@ -1,4 +1,4 @@
-# Machine Learning Review 
+# Machine Learning Interview Review 
 
 Han Sun, Ph.D. in Earthquake and Structural Engineering, M.S. in Statistics, University of California, Los Angeles
 
@@ -89,6 +89,12 @@ The distance measure increases as number of dimension grows and the feature spac
 
 To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data); 2) convert to neural network embeddings.
 
+### Why $L_1$ Norm is More Sparse than $L_2$
+
+Consider a simple x-y plane, the solution without the regularizer will be a line. As we add the $L_1$/$L_2$ norm in, we are essentially adding a soft condition to limit those values. $L_1=|x|+|y|$ and $L_2=x^2 + y^2$. On the plane, the $L_1$ norm looks like a tilted square (in high dimension space, it will be an octahedron) while the $L_2$ norm is circle when we set them equal to some constant. The solution with regularizers is as if we increase those two shapes until they insect with the original solution line. So most likely the $L_1$ square will touch the solution line at its tip while the $L_2$ circle touches it at arbitrary point.
+
+**Why not $L_3$, $L_4$ norm**,  first of all, all norms that are second differentiable at the origin will be locally equivalent to each other, of which $L_2$ is standard. For all the others, $L_1$ reproduces their behavior. A linear combination of of an $L_1$ and $L_2$ norm (**elastic net**) approximates any norm to second order at the norm and that is what matters most for regression without outlying residuals.
+
 ### Is the Coin Flipping Fair? and Coin Flipping
 
 Suppose the coin is tossed 10 times and 8 heads are observed:
@@ -99,7 +105,13 @@ If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 
 
 **Binomial Distribution**:
 
+### Expected Number of Occurrence
 
+Suppose you hear 2 loved songs in the past 8 minutes, what is the probability of hearing another one in the next 5 minutes.
+
+**Poisson distribution**: $P(k \ events \ in \ interval \ t) = \frac{(rt)^k e^{-rt}}{k!}$
+
+$$1-\frac{(2/8)^1 e^{-2/8}}{1!}=1-0.19=0.81$$
 
 ### Feature Selection
 
@@ -184,15 +196,17 @@ P-value is type I error. Probability of a type I error can be held at some (pref
 
 $log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)$ . The decisions boundary of it is 0.5. 
 
-Loss function is logistic loss: $$argmin\sum_{i}L(y_i, f(x_i))$$, where $L(y,f(x))=log\bigg(1+e^{-yf(x)}\bigg)$
+**Loss function** is logistic loss: $$argmin\sum_{i}L(y_i, f(x_i))$$, where $L(y,f(x))=log\bigg(1+e^{-yf(x)}\bigg)$. The negative likelihood of the loss function is $-logp(y|x)=\sum_i -ylog(y')-(1-y)log(1-y')$. 
 
-It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizer by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2$.
+**Convexity**: the logistic loss is a convex function (A convex function is defined as that its second derivate is always greater or equal to zero). By substituting in the terms it can be proved. Nevertheless, the logistic regression does not have a close-form solution thus requires optimization method to solve it. Eventually it is possible to find a global minimum, under condition that the data is not separable. However the data is separable, the optimum is at infinity. 
+
+It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizers by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2$.
 
 Pros: very efficient for large amount of data solving by gradient descent;
 
 Cons: need lots of data to scale well.
 
-**Multi-class logistic regression**: applying a soft-max activation function as classifier would change binary logistic regression to multiclass. The loss function becomes cross-entropy loss.
+**Multi-class logistic regression**: applying a soft-max activation function as classifier would change binary logistic regression to multiclass. The loss function becomes cross-entropy loss. Cross-entropy loss is essentially the same as log loss except the latter is a special version on binary classification.
 
 ### Decision Tree
 
@@ -337,6 +351,8 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 **Hinge Loss**: $L=max(0,1-t*p)$
 
+**Dropout**: one major issue in learning large networks is co-adaptation. In such a network, if all the weights are learned together it is common that some of the connections will have more predictive capability than the others. Dropout is to use with smaller datasets and larger network. A random portion of neurons in a layer is dropped during training. A Dropout rate of 0.5 will lead to the maximum regularization thus it helps with overfitting.
+
 **Optimization**:
 
 **Back propagation**: it follows from the use of the chain rule and product rule in differential calculus. Thus, the partial derivative of a weight is a product of the error term $\delta_j^k$ at node $ij$ in layer $k$, and the output $o_i^{k-1}$ of node  $i$ in layer $k-1$.
@@ -346,6 +362,24 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 
 ### AdaBoost for Face Recognition
+
+
+
+## Anomaly Detection
+
+Abnormality data is very rare, it is very imbalanced dataset. To detect abnormality: 1)train an autoencoder using normal data only. This autoencoder will struggle at reconstructing abnormality data; 2) increase the dimensionality of the data through diversity, meaning leveraging multiple data sources collected at the same time to detect possible adversarial samples, then building multiple machine learning models to make predictions and if the model predictions are not consistent, anomality may be detected; 3) 
+
+
+
+## Recommender System
+
+### How to deal with exposure bias
+
+
+
+### How to do exploration-exploitation
+
+
 
 
 
@@ -413,19 +447,33 @@ MCMC techniques are often applied to solve integration and optimization problems
 
 4. **Penalized likelihood model selection**. This task typically involves two steps. First, one finds the maximum likelihood (ML) estimates for each model separately. Then one uses a penalization term (for example MDL, BIC or AIC) to select one of the models. The problem with this approach is that the initial set of models can be very large. Moreover, many of those models are of not interest and, therefore, computing resources are wasted.
 
-## Open Ended Questions
+## System Design Questions 
 
 ### How would you measure how much users liked videos?
 
 
 
-### How to build a  news classifier for articles? 
+### How to build a news classifier for articles? 
 
 
 
 ### How does Facebook news feed work?
 
 
+
+### How to store most popular tags in the past 24 hours
+
+**Abstract question: top-k items over a recent time window**
+
+1. Maintain a hashmap in memory to store all tags with their counts. Any new event comes, update the count of the tag;
+2. Maintain two heaps, one maximum and one minimum. After the tag count hashmap update, check the updated tag count with the two heap to see if it's a top-K tag by comparing it with the minimum heap. If yes, add it to both heaps and update the datestamp;
+3. The top-k tags are always from the maximum heap;
+4. Add a datestamp value to the items stored in heap, and update the heap every minute to pop out-of-date tags off.
+
+**Algorithm version: top-k frequent elements**
+
+1. Use heap O(Nlog(k));
+2. Use bucket sort O(N).
 
 ## Advanced Problems
 
