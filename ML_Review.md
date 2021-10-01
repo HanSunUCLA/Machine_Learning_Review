@@ -1,6 +1,6 @@
 # Machine Learning Interview Review 
 
-Han Sun, Ph.D. in Earthquake and Structural Engineering, M.S. in Statistics, University of California, Los Angeles
+Han Sun
 
 
 
@@ -8,7 +8,13 @@ Han Sun, Ph.D. in Earthquake and Structural Engineering, M.S. in Statistics, Uni
 
 ### Bias vs. Variance
 
-High bias, underfitting; high variance, overfitting, high model complexity
+High bias, underfitting; high variance, overfitting, high model complexity.
+
+$$Bias(\hat{\theta})=E[\hat{\theta}] - \theta$$
+
+$$Var(\hat{\theta})=E[\hat{\theta}^2] - E[\hat{\theta}]^2$$
+
+Use an MSE loss as an example, we can deduct that $MSE=[Bias]^2+Variance$. Also, during the deduction, it can be shown that there is a 3rd term that eventually becomes zero. 
 
 ### Empirical Risk Minimization
 
@@ -36,6 +42,8 @@ Overfitting indicates that $I_S[f_n]$ is small but $I[f_n]$ is large, $f_n$ will
 
 ### KL-Divergence
 
+Also known as relative entropy. Average number of extra bits to represent an event from Q to P.
+
 Discrete case: $D_{KL}(P||Q) = -\sum_{x\in X}P(x)log\bigg(\frac{Q(x)}{P(x)}\bigg)$
 
 Continuous case: $D_{KL}(P||Q) = \int_{-\infin}^{\infin} p(x)log\bigg(\frac{p(x)}{q(x)}\bigg) dx$
@@ -43,6 +51,12 @@ Continuous case: $D_{KL}(P||Q) = \int_{-\infin}^{\infin} p(x)log\bigg(\frac{p(x)
 ### Shannon Entropy
 
 $H(X) = E\big[-log(P(X)\big]$
+
+### Cross Entropy
+
+Entropy is the number of bits required to transmit a randomly selected event from a probability distribution. For example, a skewed distribution has a low entropy since it is less random. If used as loss function, it can be written as:
+
+$$-\sum_{c=1}^{M}y_{o,c}log(p_{o,c})$$
 
 ### Bayesian vs. Frequentist
 
@@ -95,6 +109,10 @@ Consider a simple x-y plane, the solution without the regularizer will be a line
 
 **Why not $L_3$, $L_4$ norm**,  first of all, all norms that are second differentiable at the origin will be locally equivalent to each other, of which $L_2$ is standard. For all the others, $L_1$ reproduces their behavior. A linear combination of of an $L_1$ and $L_2$ norm (**elastic net**) approximates any norm to second order at the norm and that is what matters most for regression without outlying residuals.
 
+### Simpson's Paradox
+
+A statistical scenario that leads to that the overall trend disappeared after splitting data into groups. It makes resampling very difficult since different resampling data tends to give different conclusions. This is often caused by a lurking variable that is hidden. This lurking variable divides the whole dataset into different distributions. 
+
 ### Is the Coin Flipping Fair? and Coin Flipping
 
 Suppose the coin is tossed 10 times and 8 heads are observed:
@@ -103,7 +121,13 @@ Suppose the coin is tossed 10 times and 8 heads are observed:
 
 If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
 
-**Binomial Distribution**:
+**Binomial distribution**: after n flips, what the probability is $P(n,k,p)$
+
+**Probability of number of heads before first tail**: $P(e_{1..k-1}=head, e_{k}=tail)=p^{k-1}(1-p)$. Its expectation can be calculated as $\sum_{k=1}^{\infty}=p^{k-1}(1-p)=1/p$. This is known as the **geometric distribution**. 
+
+**Multinomial distribution**: instead of coin flipping, say we are playing a dice with k faces. The probability of all different dices faces at n trials is $P(n, k, p)$.
+
+**Bernoulli distribution**: if the coin is only flipped once
 
 ### Expected Number of Occurrence
 
@@ -171,7 +195,7 @@ This belongs to the ensemble strategies. Once all K training are done, the final
 
 ### Model Evaluation
 
-Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$
+Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$ and the AUC.
 
 Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
@@ -194,13 +218,17 @@ P-value is type I error. Probability of a type I error can be held at some (pref
 
 ### Logistic Regression
 
-$log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)$ . The decisions boundary of it is 0.5. 
+$log(\frac{p(y=1)}{1-p(y=1)}) = \beta^{T}X$ implies a sigmoid activation function, which can be seen as $p(y=1) = \frac{1}{1+e^{-\beta^TX}} \in (0, 1)$ . The decisions boundary of it is 0.5. The derivative of the sigmoid function is $\frac{d(\sigma(x))}{dx}=\sigma (x) ( 1 - \sigma (x))$
 
 **Loss function** is logistic loss: $$argmin\sum_{i}L(y_i, f(x_i))$$, where $L(y,f(x))=log\bigg(1+e^{-yf(x)}\bigg)$. The negative likelihood of the loss function is $-logp(y|x)=\sum_i -ylog(y')-(1-y)log(1-y')$. 
 
-**Convexity**: the logistic loss is a convex function (A convex function is defined as that its second derivate is always greater or equal to zero). By substituting in the terms it can be proved. Nevertheless, the logistic regression does not have a close-form solution thus requires optimization method to solve it. Eventually it is possible to find a global minimum, under condition that the data is not separable. However the data is separable, the optimum is at infinity. 
+**Convexity**: the logistic loss is a convex function (A convex function is defined as that its second derivate is always greater or equal to zero). In other words, convex loss function has a global minimum. By substituting in the terms it can be proved. Nevertheless, the logistic regression does not have a close-form solution thus requires optimization method to solve it. Eventually it is possible to find a global minimum, under condition that the data is not separable. However the data is separable, the optimum is at infinity. 
 
-It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizers by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2$.
+**Solve**: taking derivative of the logistic loss and apply gradient descent or the Newtons method we can solve it. 
+
+**Why not use MSE as loss**: the MSE loss is in a form of combination of scalars (1s and 0s) with the predicted probability. The second derivative of it is not guaranteed to be convex across the feature space ($X$). 
+
+It is necessary to perform feature selection (remove uncorrelated features, filter out highly correlated features) since the model itself does not enforce it. It is possible to enforce regularizers by including it in the loss term such as $argmin\sum_{i}L(y_i, f(x_i)) + \lambda|w|^2$. Note that logistic regression is considered as a **linear model** since its decision boundary is linear. This also implies that typical l1 and l2 norm methods are working for it.
 
 Pros: very efficient for large amount of data solving by gradient descent;
 
@@ -210,21 +238,38 @@ Cons: need lots of data to scale well.
 
 ### Decision Tree
 
+Decision tree is a nonlinear method since it is piecewise linear but has discontinuity between its pieces.  
+
 Pro: easy to understand, have value even with small amount of data and is a white box;
 
 Con: unstable, very high variance depending on training data. it is often inaccurate.
+
+**Pruning**: pruning of tree is a method to reduce variance. It reduces the size of decision trees by removing sections of the tree that provide little power to classify instances.
+
+**Regularization**: limit depth of the tree, apply bagging (more trees) and set criteria for when to stop split.
 
 ### Gradient Boosting (sequential)
 
 **Compared to Ada-Boost**: a generalized version of Ada-Boost. The difference is that it does not have a particular loss function, any differentiable loss function works. Decision trees are used as weak learners. In Ada-Boost, only one stamp trees are used. In GB, more stamps tree is supported. 
 
-The predictions of each tree are added together sequentially. After calculating the loss, to perform the gradient descent procedure, we must add a tree to the model that reduces the loss (i.e. follow the gradient). We do this by parameterizing the tree, then modify the parameters of the tree and move in the right direction by reducing the residual loss.The contribution of each tree to this sum can be weighted to slow down the learning by the algorithm. This weighting is called a shrinkage or a learning rate.
+The predictions of each tree are added together sequentially. After calculating the loss, to perform the gradient descent procedure, we must add a tree to the model that reduces the loss (i.e. follow the gradient). We do this by parameterizing the tree, then modify the parameters of the tree and move in the right direction by reducing the residual loss. The contribution of each tree to this sum can be weighted to slow down the learning by the algorithm. This weighting is called a shrinkage or a learning rate.
+
+In other words, each time we add a new weak learner, we use it to correct the residual error from previous learners such that $F_{m+1}(x) = F_m(x)+h_m(x)=y$. Thus we have: $h_m(x)=-\frac{dL_MSE}{dF}$
+
+**Algorithm**:
+
+1. initialize model with a constant value;
+2. for $m=1$ to $M$:
+   - compute pseudo-residuals;
+   - fit a weak learner closed under scaling $h_m(x)$ to pseudo-residuals using training data;
+   - compute multiplier $\gamma_m$ based on the optimization scheme that minimizes the actual loss of $\sum y_i - F_{m-1}(x_i)+\gamma h_m(x_i)$
+3. Update the model
 
 **Compared to logistic regression**: if all features are binary, they are equivalent with large dataset. A single gradient boosting decision stump is: $S=\sum_{i=1}^{n}(a_i-b_i)x_i+b_i$which is equal to $S=c_0+\sum_{i=1}^{n}c_ix_i$ , which is exactly the logit of logistic regression. If cross-entropy loss is used for GB, then they are the same if the number of stumps in GB is large enough. GB is robust against multilinearity though logistic regression doesn't.  
 
 ### Bagging (parallel)
 
-Among all those training examples, randomly pick a subset from them with replacement and train decision tree for B times (usually called bootstrap aggregating). The final model is evaluated by averaging prediction of all B trees (regression) or majority vote (classification). 
+Among all those training examples, randomly pick a subset from them **with replacement** (sampling with replacement ensures each bootstrap is independent from its peers) and train decision tree for B times (usually called **bootstrap aggregating**). The final model is evaluated by averaging prediction of all B trees (regression) or majority vote (classification). 
 
 ### Random Forest
 
@@ -331,35 +376,41 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 ## Computer Vision
 
-### Convolutional Neural Network
+### Deep Learning
+
+Deep learning is always better than logistic regression as it has way more flexible decision boundaries. 
+
+**Bias term**: the bias value allows the activation function to be shifted to the left or right, to better fit the data.
 
 **Gradient vanishing and exploding**: the chain rule of gradient descent over deep neural networks requires that the outputs of all previous layers (output of activation function) multiply to passing gradient which leads to gradient vanishing and gradient exploding. 
 
-**Batch Normalization**: it essentially reduces internal covariance shifts. It is used to normalize the layer output at batch level (typically before nonlinear activation function such as Relu to avoid distribution change). It makes 1) model less sensitive to initial weights; 2) make the model landscape much smoother so large learning rate can be adopted; 3) it also helps with gradient vanishing as it normalizes the output such for sigmoid activation function to avoid small derivatives. It should not be used with drop-out.
+**Batch normalization**: it essentially reduces internal covariance shifts. It is used to normalize the layer output at batch level (typically before nonlinear activation function such as Relu to avoid distribution change). It makes 1) model less sensitive to initial weights; 2) make the model landscape much smoother so large learning rate can be adopted; 3) it also helps with gradient vanishing as it normalizes the output such for sigmoid activation function to avoid small derivatives. It should not be used with drop-out. In training, batch normalization is calculated using the mini-batch while in testing it is based on population (taken from training).
 
-**Activation Function**: the **ReLU** , $f(z)=\max(0, z)$ is a best choice for activation function as it is easy to compute and does not saturate because $\lim_{z\rightarrow}f(z)=+\infin$ instead of 1 as compared to the sigmoid function; it also avoids gradient vanishing and exploding as the derivative of it is a constant and its output is not saturated (thus no small multiplier). The downside is so-called **dying ReLU** due to the output is always zero for negative inputs. Solution is **leakyReLU**, $f(z)=max(\alpha z, z)$.
+**Activation function**: the **ReLU** , $f(z)=\max(0, z)$ is a best choice for activation function as it is easy to compute and does not saturate because $\lim_{z\rightarrow}f(z)=+\infin$ instead of 1 as compared to the sigmoid function; it also avoids gradient vanishing and exploding as the derivative of it is a constant and its output is not saturated (thus no small multiplier). The downside is so-called **dying ReLU** due to the output is always zero for negative inputs. Solution is **leakyReLU**, $f(z)=max(\alpha z, z)$. The essential idea of those nonlinear activation functions is that they create complex mappings between input and output.
 
-**Residual Block**: the residual block basically takes the input to a layer and directly adds it to the output of the activation resulting in a higher overall derivative of the block. 
+**Residual block**: the residual block basically takes the input to a layer and directly adds it to the output of the activation resulting in a higher overall derivative of the block. 
 
-**Soft-max**: it applies the standard exponential function to each element of the input vector  and normalizes these values by dividing by the sum of all these exponentials; this normalization ensures that the sum of the components of the output vector is 1.
+**Soft-max**: it applies the standard exponential function to each element of the input vector and normalizes these values by dividing by the sum of all these exponentials; this normalization ensures that the sum of the components of the output vector is 1.
 
-**Weight Initialization**: 
+**Weight initialization**: 
 
-**Cross Entropy Loss**: $L=-\frac{1}{N}\sum^{n}_{i=1}t_i log(p_i)$ 
+**Cross entropy loss**: $L=-\frac{1}{N}\sum^{n}_{i=1}t_i log(p_i)$ 
 
-**KL Divergence Loss**:
+**KL divergence loss**: see KL divergence. The difference between KL divergence and cross-entropy is that the former measures the extra bits that needed to move as compared to the latter which measures the average bits. 
 
-**Hinge Loss**: $L=max(0,1-t*p)$
+**Sparse entropy loss​**: same as cross entropy only that it relies on integer instead of one-hot encoding so it saves memory. 
 
-**Dropout**: one major issue in learning large networks is co-adaptation. In such a network, if all the weights are learned together it is common that some of the connections will have more predictive capability than the others. Dropout is to use with smaller datasets and larger network. A random portion of neurons in a layer is dropped during training. A Dropout rate of 0.5 will lead to the maximum regularization thus it helps with overfitting.
+**Hinge loss**: $L=max(0,1-t*p)$
 
-**Optimization**:
+**Dropout**: one major issue in learning large networks is co-adaptation. In such a network, if all the weights are learned together it is common that some of the connections will have more predictive capability than the others. Dropout is to use with smaller datasets and larger network. A random portion of neurons in a layer is dropped during training. A Dropout rate of 0.5 will lead to the maximum regularization thus it helps with overfitting. During training, each neuron usually get activations only from two neurons from the hidden layer (while being connected to four), due to dropout. Now, imagine we finished the training and remove dropout. Now activations of the output neurons will be computed based on four values from the hidden layer. This is likely to put the output neurons in unusual regime, so they will produce too large absolute values, being overexcited. To avoid this, the trick is to multiply the input connections' weights of the last layer by 1-p (so, by 0.5). Alternatively, one can multiply the outputs of the hidden layer by 1-p, which is basically the same.
 
 **Back propagation**: it follows from the use of the chain rule and product rule in differential calculus. Thus, the partial derivative of a weight is a product of the error term $\delta_j^k$ at node $ij$ in layer $k$, and the output $o_i^{k-1}$ of node  $i$ in layer $k-1$.
 
 **Adversarial attacks**: a small perturbation to the image causes the CNN model to have drastic changes in its prediction. To counter: 1) denoising inputs:  apply a denoising autoencoder that is trained by noisy/adversarial examples to reconstruct the image with no noise added; 2) verifying inputs: after denoising, add another classification layer to remove any potential remaining noisy images. It is important to keep diversity of the above two methods.
 
+**Batch gradient descent**: batch gradient descent computes the gradient using the whole dataset. This is great for convex, or relatively smooth error manifolds. In this case, we move somewhat directly towards an optimum solution, either local or global. Additionally, batch gradient descent, given an annealed learning rate, will eventually find the minimum located in it's basin of attraction.
 
+**Stochastic gradient descent**: use a randomly selected mini-batch from training data to conduct gradient descent. The somewhat noisier gradient calculated using the reduced number of samples tends to jerk the model out of local minima into a region that hopefully is more optimal thus the mini-batch approach results in smoother convergence. It almost always converge to global minimum if the objective function is convex. SGD is also much more computationally efficient as it does not load the entire dataset into memory. We can add **Momentum** to it by recording previous update and using a linear combination of the current and previous update. **RMSProp** (Root Mean Square Propagation) divide the learning rate for a weight by a running average of the magnitudes of recent gradients for that weights. **Adam** (Adaptive Moment Estimation) is a combination of Momentum and RMSProp. 
 
 ### AdaBoost for Face Recognition
 
@@ -367,17 +418,73 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 ## Anomaly Detection
 
-Abnormality data is very rare, it is very imbalanced dataset. To detect abnormality: 1)train an autoencoder using normal data only. This autoencoder will struggle at reconstructing abnormality data; 2) increase the dimensionality of the data through diversity, meaning leveraging multiple data sources collected at the same time to detect possible adversarial samples, then building multiple machine learning models to make predictions and if the model predictions are not consistent, anomality may be detected; 3) 
+Abnormality data is very rare, it is very imbalanced dataset. To detect abnormality: 1)train an autoencoder using normal data only. This autoencoder will struggle at reconstructing abnormality data; 2) increase the dimensionality of the data through diversity, meaning leveraging multiple data sources collected at the same time to detect possible adversarial samples, then building multiple machine learning models to make predictions and if the model predictions are not consistent, anomality may be detected.
 
 
 
 ## Recommender System
 
-### How to deal with exposure bias
+### Pinterest Home-feed
+
+The first layers are the candidate generators that are based on different algorithms or models. For example, the Pinterest deploys three candidate models, a topic candidate generator, a polaris candidate generator and their unique Pixie random walk generator. All the candidates are mixed and ranked through a ranking model. The output of the ranking model then fits to a blender that includes ads, rules, etc. and finally sends to home feed. 
+
+**Two tower model**: the two tower model is used for ranking. One tower takes the pin's content and makes it through several layers to become a pin's embedding. The other tower takes the user features as well as user engaging histories and becomes a user embedding. A final dot-product is between those two embeddings for ranking. 
+
+**Serving**: the pin's embeddings are usually stable so they are precomputed before serving. They are computed in an offline workflow. For fresh pins (within a few hours of uploading), they will need to be computed online, namely, a real-time fresh pin embedding computation. 
+
+### Pinterest Ads Recommendation System
+
+**Automatic bid**: similar to Yahoo's programmatic bid, the bid price is adjusted automatically in real-time (through control) to achieve the advertiser's goal. For a given ad group, the loss auction data is used to compute how much more it increase so that it can win the bid. Similarly, for all winning auctions, we could calculate the minimum bid decrease to lose that auction. Combining those two cumulative counts, we can recommend the bid change corresponding to highest winning auctions to advertisers. 
+
+**Ad ranking**: a GBDT classification model is used to predict CTR and descendingly rank notifications. 
+
+### Pinterest Data Management for Computer Vision
 
 
 
-### How to do exploration-exploitation
+### LinkedIn Home-Feed
+
+**Features**:  **identity** - who are you? where do you work? what are your skills? who are you connected with? **content** - how many times was it updated/viewed? how many times was it liked? How old is it? What language is it? What companies, people, or topics are mentioned? **behavior** - what have you liked or posted? Who do you interact with most frequently? Where do you spend most time in your news feed?
+
+**Labels**: traditionally CTR is used, however it is too simplistic. Additional metrics are: time spend reading, insights from your social graph, and additional signals from user experience research. All those metrics are combined together to personalize the feed. 
+
+**Online metrics**: average CTR, number of positive reactions, number of comments, number of shares, number of additional follows, click to landing page (conversion), click to LinkedIn page.
+
+**Feed content**: trending news, jobs, courses, or updates from connections
+
+**Models**: logistic regression, gradient-boosted decision trees and neural networks. LinkedIn specific, boosted decision tables. A decision table is a mapping from a sequence of Boolean tests to a real value. As for the ensemble of many decision trees, a special data structure is designed to skip lots of tests needed. **Response grouping for shared learning:** For optimal transfer learning among objectives, we group objectives into two categories: (1) passive consumption oriented, (2) active consumption oriented. As a result, we split our deep learning network into two towers representing each category, shown as two different colored towers in figure above. We call this “two-tower multi-task deep learning setup.” 
+
+We optimize for cross entropy loss per objective to train a multi-layer network for both the towers. We identified the following key challenges and learnings for the model training process:
+
+- **Model variance:** We observed significant variance in model performance, especially for sparse objectives (e.g., reshare) that correlated with output in both our offline evaluation metrics as well as online A/B testing. We identified the initialization and the optimizers (such as [Adam](https://arxiv.org/abs/1412.6980)) that contribute significantly to variance in the early stage of training. A warm start routine to gradually increase the learning rate helped to overcome a majority of the variance problem.
+- **Model calibration:** Our feature and model score monitoring infrastructure (such as [ThirdEye](https://engineering.linkedin.com/blog/2019/01/introducing-thirdeye--linkedins-business-wide-monitoring-platfor)) helped to identify several model calibration challenges, especially at the interaction stage with modeling components external to the deep learning setup. O/E ratio mismatch among different objectives (compared to our previous setup) was one such challenge, and we identified several sampling schemes for negative response training data affecting O/E ratios.  
+- **Feature normalization:** Our XGBoost based feature design provides the model with an embedding lookup layer that avoids the feature normalization issues for model training. However, as we expanded into embeddings based features, we realized that normalization would play a major role into the training process. Batch normalization and/or having a translational layer helped alleviate some of these problems.
+- **Feature embedding:** XGBoost can encode a derived feature by outputting a selected leaf node. These can be enumerated across the whole forest to set up a contiguous, dense space that fits naturally into embedding lookup. This direct embedding lookup avoids any issue of normalization of numeric features, as the embedding space is chosen by the training process itself regardless of eccentricities of input features. These embeddings are a natural fit for feeding into further layers of a neural network. While this limits TensorFlow to only consider the feature splits that XGBoost chose, by having sufficiently deep trees and a large forest ensemble, we were able to get good coverage of our feature space.
+- **Converting feature space:** Another advantage of utilizing XGBoost as encoding input to TensorFlow as an embedding is that it doesn’t require expensive [conversions involving vocabulary maps](https://github.com/linkedin/Avro2TF) from human readable features into a space for easy embedding/matrix multiplication. Previously, adopting this into models required expensive lookups/conversions on the critical path, which was measured at one point to be around 20% of latency in the feed model during [tensor](https://engineering.linkedin.com/blog/2020/feed-typed-ai-features) migration. While not needed for the second pass ranking system due to the above mentioned migration, XGBoost normalization allowed for easy experimentation with TensorFlow in our models that hadn’t yet fully migrated to tensor features.
+
+**Ranking score**: Fp(passive consumption) refers to passive consumption related objectives (member behaviors) such as clicks, [dwell time](https://engineering.linkedin.com/blog/2020/understanding-feed-dwell-time), etc. Fa(active consumption) refers to active contribution interaction objectives such as comments, reshares, etc. Fo(Other)accounts for objectives that do not fall into these two categories, such as [creator side feedback](https://engineering.linkedin.com/blog/2018/10/linkedin-feed-with-creator-side-optimization). Alpha and lambda are tuning parameters balancing for a healthy ecosystem of increased active consumption, while not hurting more passive members’ interests
+
+**Future**: build an automatic framework for easy adopting new models, new features and conducting A/B tests; developing per-member models for personalized feeds; building an interest graph that allows measuring member-to-topic affinity and topic-to-topic relatedness.
+
+**LinkedIn knowledge graph**: it is a kind of entity taxonomy: identifier, definition, canonical name, synonyms in different languages and attributes. Generate rules to identify inaccurate entities. 
+
+- generate candidates: entity candidates are common phrases in member profiles and job descriptions based on intuitive rules;
+
+- disambiguate entities: by representing each phrase as a vector of top co-occurred phrases in member profiles and job descriptions, we developed a soft clustering algorithm to group phrases. An ambiguous phrase can appear in multiple clusters and represent different entities;
+
+- de-duplicate entities: multiple phrases can represent the same entity if they are synonyms of each other. By representing each phrase as a word vector (e.g., produced by a [word2vec model](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf) trained on member profiles and job descriptions), we run a clustering algorithm combined with manual validations from taxonomists to de-duplicate entities;
+
+- Translate entities into other languages. Given the power-law nature of the member coverage of entities, linguistic experts at LinkedIn manually translate the top entities with high member coverages into international languages to achieve high precision, and [PSCFG-based machine translation models](http://www.aclweb.org/anthology/P/P05/P05-1.pdf#page=291) are applied to automatically translate long-tail entities to achieve high recall.
+
+- Entity attributes are categorized into two parts: relationships to other entities in a taxonomy, and characteristic features not in any taxonomy. For example, a company entity has attributes that refer to other entities, such as members, skills, companies, and industries with identifiers in the corresponding taxonomies; it also has attributes such as a logo, revenue, and URL that do not refer to any other entity in any taxonomy. The former represents edges in the LinkedIn knowledge graph, which will be discussed in the next section. The latter involves feature extraction from text, data ingestion from search engine, data integration from external sources, and crowdsourcing-based methods, etc.
+
+  All entity attributes have confidence scores, either computed by a machine learning model, or assigned to be 1.0 if attributes are human-verified. The confidence scores predicted by machines are calibrated using a separate validation set, such that downstream applications can balance the tradeoff between accuracy and coverage easily by interpreting it as probability.
+
+### How to Deal with Exposure Bias
+
+
+
+### How to Do Exploration-exploitation
 
 
 
@@ -409,6 +516,8 @@ Let $$\sigma^2=\begin{bmatrix} \sigma_1^2 & \rho\sigma_1\sigma_2\\\rho\sigma_1\s
 
 $M=chol(\sigma^2)^T$, $b=(M Z)^T + \mu^T$
 
+To simulate this distribution, Z is from uniformly random distribution. 
+
 **Multinomial**:
 
 The probability mass function is: $f(x_1, x_2, ...x_k)=\frac{n!}{x_1!x_2!...x_k!}p_1^{x_1}p_2^{x_2}\times...p_k^{x_k}$
@@ -435,7 +544,7 @@ MCMC techniques are often applied to solve integration and optimization problems
 
      ​	$$E_{p(x|y)}(f(x))=\int_X f(x)p(x|y)dx$$
 
-     for some function of interest $f: X \to R^{f}$ integrable with respect to $p(x|y)$. 
+     for some function of interest $f: X \to R^{f}$ integratable with respect to $p(x|y)$. 
 
 2. **Statistical mechanics**. Here, one needs to compute the partition function $Z$ of a system with states $s$ and Hamiltonian $E(s)$
 
@@ -529,6 +638,8 @@ The biased sample variance is:$s_n^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dots
 The unbiased sample variance is: $s^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dots+(x_n-\bar{x})^2}{n-1}=\frac{\sum^{n}_{i=1}x_i^2}{n-1}-\frac{(\sum^{n}_{i=1}x_i)^2}{(n-1)n}=\bigg(\frac{n}{n-1}\bigg)s_n^2$
 
 ### Everything about Hadoop and MapReduce
+
+
 
 ### Back Propagation
 
