@@ -1,6 +1,6 @@
 # Machine Learning Interview Review 
 
-Han Sun
+**Han Sun**
 
 
 
@@ -54,13 +54,13 @@ $H(X) = E\big[-log(P(X)\big]$
 
 ### Cross Entropy
 
-Entropy is the number of bits required to transmit a randomly selected event from a probability distribution. For example, a skewed distribution has a low entropy since it is less random. If used as loss function, it can be written as:
+Entropy is the number of bits required to transmit a randomly selected event from a probability distribution. For example, a skewed distribution has a low entropy since it is less random. If used as loss function, it can be written as: $$-\sum_{c=1}^{M}y_{o,c}log(p_{o,c})$$.
 
-$$-\sum_{c=1}^{M}y_{o,c}log(p_{o,c})$$
+**Why using cross-entropy for classification loss**: cross entropy measures the bit-wise difference between two distributions (predicted vs. true) which is good for classification. It is in fact equivalent to MLE in classification setting.
 
 ### Bayesian vs. Frequentist
 
-**Frequentist:** sampling is infinite and decision rules can be sharp. Data are a repeatable random sample - there is a frequency. Underlying parameters are fixed i.e. they remain constant during this repeatable sampling process.
+**Frequentist:** sampling is infinite and decision rules can be sharp. Data are a repeatable random sample - there is a frequency. Underlying parameters are fixed, for example, they remain constant during this repeatable sampling process.
 
 **Bayesian:** unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
 
@@ -70,29 +70,33 @@ $$-\sum_{c=1}^{M}y_{o,c}log(p_{o,c})$$
 
 
 
-### Why big data works?
-
-
-
 ## Practical Procedures
 
 ### Deal with Missing Data
 
-- Remove missing data rows
-- Impute missing values: 1) use a constant value to distinguish missing for missing features, such as 0; 2) use a randomly sampled value based on this feature's distribution; 3) use a mean, median or mode value of this feature; 4) use a value predicted by another model.
+- Remove missing data rows;
+- Impute missing values: 1) use a constant value (**default for missing**) to distinguish missing for missing features, such as 0; 2) use a randomly sampled value based on this feature's distribution; 3) use a mean, median or mode value of this feature; 4) use a value predicted by another model.
 
 ### Deal with Overfitting
 
-Ways to detect: training/testing split; large model weights in linear models can indicate that model is overfitted
+Ways to detect: training/testing split; large model weights in linear models can indicate that model is overfitted:
 
-- Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer.
-- Data-wise: add more data which can be explained by VC-dimension.
+- Model-wise: 1) use regularization models: reduce variance by applying feature selection models, LASSO and Ridge (apply L1, L2 regularizer), random forest; 2) use k-fold cross validation; 3) apply ensemble models, Bagging, Boosting, a soft-max layer;
+- Data-wise: add more representative data which can be explained by VC-dimension;
 - Deep learning: 1) early stopping; 2) drop-out 3) add regularizer for weights; 4) use data augmentation (for images); 5) batch normalization can also help reduce some overfitting.
+
+### Deal with Data Sampling
+
+For imbalanced dataset, data sampling is needed for training the model. 
+
+- **Down-sampling (Candidate sampling)**: down-sample the larger population of the training data.  The simplest way is to conduct uniform downsampling. Fancy way is noise contrastive estimation which conduct the downsample based on a prior information;
+- **Up-sampling (data augmentation)**: up-sample the less populated group. This is basically to generate synthetic data at proximity of the existing data. It can also be done through direct duplication. Image transformation is a perfect example;
+- **Add class weight**: the second option is to leverage the class weights parameter during the fit model process. For each class in the target, a weightage is assigned. The minority class will get more weightage when compared to the majority ones. 
 
 ### Identify Outliers
 
 - Extreme value analysis: plot the histogram of individual features and exclude data points that is 3 standard deviation away if the data is Gaussian like. 
-- Cluster based: use k-mans to cluster data. Exclude data points that are too far away from its centroid. 
+- Cluster based: use k-means to cluster data. Exclude data points that are too far away from its centroid. 
 - Use robust models such as LASSO, ridge and decision tree.
 
 ### Curse of Dimensionality
@@ -177,7 +181,7 @@ This repeated holdout procedure, sometimes also called *Monte Carlo Cross-Valida
 
    $ACC_{boot}=\frac{1}{b}\sum_{b}^{j=1}\frac{1}{n}\sum^{n}_{i=1}\big(1 - L(\hat{y_i}, y_i)\big)$
 
-A slightly different approach to boostrapping using the so-called *Leave-One-Out Boostrap* technique. The *out-of-bag* samples are used as test sets for evaluation instead of directly using training data. The standard error can be calculated as:
+A slightly different approach to Boostrapping using the so-called *Leave-One-Out Boostrap* technique. The *out-of-bag* samples are used as test sets for evaluation instead of directly using training data. The standard error can be calculated as:
 
 $SE_{boot}=\sqrt{\frac{1}{b-1}\sum_{i=1}^{b}(ACC_i-ACC_{boot})^2}$
 
@@ -195,9 +199,11 @@ This belongs to the ensemble strategies. Once all K training are done, the final
 
 ### Model Evaluation
 
-Classification: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$ and the AUC.
+**Classification**: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$; ROC (TP vs FP) curve and AUC (area under curve); Precision-Recall curve, and AUC.
 
-Regression: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
+$AUC_{PvR}-AUC_{ROC}$: $AUC_{PvR}$ highlights the amount of False Positives relative to the class size, whereas $AUC_{ROC}$ better reflects the total amount of False Positives independent of in which class they come up. In summary, AUC of ROC curve is suitable for measuring performance on balanced dataset, while AUC of PoR curve is suitable for imbalanced dataset measurement.
+
+**Regression**: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
 #### A/B Test and Hypothesis Testing
 
@@ -243,6 +249,8 @@ Decision tree is a nonlinear method since it is piecewise linear but has discont
 Pro: easy to understand, have value even with small amount of data and is a white box;
 
 Con: unstable, very high variance depending on training data. it is often inaccurate.
+
+**Gini Index**: each split is based on Gini Index calculation. $$Gini=1-\sum_i p_i^2.$$ Gini Index represents the impurity of the data. 0.5 indicates pure random; 0 indicates pure perfect; 1 indicates the random distribution of elements across various classes.
 
 **Pruning**: pruning of tree is a method to reduce variance. It reduces the size of decision trees by removing sections of the tree that provide little power to classify instances.
 
@@ -376,6 +384,10 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 ## Computer Vision
 
+### AdaBoost for Face Recognition
+
+
+
 ### Deep Learning
 
 Deep learning is always better than logistic regression as it has way more flexible decision boundaries. 
@@ -384,7 +396,9 @@ Deep learning is always better than logistic regression as it has way more flexi
 
 **Gradient vanishing and exploding**: the chain rule of gradient descent over deep neural networks requires that the outputs of all previous layers (output of activation function) multiply to passing gradient which leads to gradient vanishing and gradient exploding. 
 
-**Batch normalization**: it essentially reduces internal covariance shifts. It is used to normalize the layer output at batch level (typically before nonlinear activation function such as Relu to avoid distribution change). It makes 1) model less sensitive to initial weights; 2) make the model landscape much smoother so large learning rate can be adopted; 3) it also helps with gradient vanishing as it normalizes the output such for sigmoid activation function to avoid small derivatives. It should not be used with drop-out. In training, batch normalization is calculated using the mini-batch while in testing it is based on population (taken from training).
+**Batch normalization**: it essentially reduces internal covariance shifts. It is used to normalize the layer output at batch level (typically before nonlinear activation function such as ReLU to avoid distribution change). It makes 1) model less sensitive to initial weights; 2) make the model landscape much smoother so large learning rate can be adopted; 3) it also helps with gradient vanishing as it normalizes the output such for sigmoid activation function to avoid small derivatives. It should not be used with drop-out. In training, batch normalization is calculated using the mini-batch while in testing it is based on population (taken from training).
+
+**Layer normalization**: input values of all neurons in the same layer are normalized for each data sample. It works better in RNN compared to batch normalization but is not good in CNN or fully connected layers.
 
 **Activation function**: the **ReLU** , $f(z)=\max(0, z)$ is a best choice for activation function as it is easy to compute and does not saturate because $\lim_{z\rightarrow}f(z)=+\infin$ instead of 1 as compared to the sigmoid function; it also avoids gradient vanishing and exploding as the derivative of it is a constant and its output is not saturated (thus no small multiplier). The downside is so-called **dying ReLU** due to the output is always zero for negative inputs. Solution is **leakyReLU**, $f(z)=max(\alpha z, z)$. The essential idea of those nonlinear activation functions is that they create complex mappings between input and output.
 
@@ -412,7 +426,21 @@ Deep learning is always better than logistic regression as it has way more flexi
 
 **Stochastic gradient descent**: use a randomly selected mini-batch from training data to conduct gradient descent. The somewhat noisier gradient calculated using the reduced number of samples tends to jerk the model out of local minima into a region that hopefully is more optimal thus the mini-batch approach results in smoother convergence. It almost always converge to global minimum if the objective function is convex. SGD is also much more computationally efficient as it does not load the entire dataset into memory. We can add **Momentum** to it by recording previous update and using a linear combination of the current and previous update. **RMSProp** (Root Mean Square Propagation) divide the learning rate for a weight by a running average of the magnitudes of recent gradients for that weights. **Adam** (Adaptive Moment Estimation) is a combination of Momentum and RMSProp. 
 
-### AdaBoost for Face Recognition
+- Regular methods: gradient descent, stochastic gradient descent, mini-batch stochastic gradient descent
+
+- Momentum variant: 
+
+  $h^t = \alpha h^{t-1} + \eta g^t$, $w^t=w^{t-1}-h^t$, usually $\alpha=0.9$. This is beneficial since momentum balances local sign changes of gradients
+
+- Nesterov momentum variant: calculate new momentum based new weight location
+
+  $h^t=\alpha h^{t-1} + \eta \nabla L(w^{t-1}-\alpha h^{t-1})$
+
+- Adaptive learning rate variant: as $G_j^t$ always increases, this leads to early stopping ($\epsilon$ is for preventing divided by zero)
+
+  $G_j^t=G_j^{t-1}+(\nabla L_j^t)^2$, $w_j^{t}=w_j^{t-1}-\frac{\eta}{\sqrt{G_j^t+\epsilon}}\nabla L^t_j$
+
+- Adam: combines both momentum and adaptive method
 
 
 
@@ -424,13 +452,21 @@ Abnormality data is very rare, it is very imbalanced dataset. To detect abnormal
 
 ## Recommender System
 
+### How to Choose Features
+
+General category of features: **meta features** (user age, gender, location, job titles, is_high_clicker; item id, item score, item type, item years old); **content features** (item image/video, item titles/descriptions/tags); sequence features (user history, content history); **past_perform features** (item past 1 week impression/click/conversion count, item aggregated user features, user aggregated item features in the past X time, has retarget beacon, cross field aggregated features: publisher_tld_site_ctr_qz); **graph features** (user connections from graphs); online features (time, day of week, month, user id, item id, browser id, os id); **target-encoding features**, (the average historical delivery duration within that bucket, same as past_perform at some levels); **real-time features** (average delivery durations over the past 20 minutes at a store level and sub-region level)
+
 ### How to Deal with Exposure Bias
 
 
 
-### How to Do Exploration-exploitation
+### How to Do Exploration-Exploitation
 
+**Frequency Capping**: add a filter that limits number of times the content has been shown to the same user within a window frame; 
 
+**Impression Discounting**: in the re-ranking stage, add a simple filter: $p_{new} = p_{original} \times (w_{1} \times g(impCount) + w_2 \times g(lastSeen))$. These two parameters can be learned by a simple model with log data;
+
+**Online Learning**: 
 
 
 
@@ -470,6 +506,8 @@ Various methods may be used to simulate a multinomial distribution. A very simpl
 
 ## Time Series 
 
+
+
 ## MCMC
 
 MCMC techniques are often applied to solve integration and optimization problems in large dimensional spaces. These two types of problem play a fundamental role in machine learning, physics, statistics, econometrics and decision analysis. Examples are:
@@ -500,35 +538,44 @@ MCMC techniques are often applied to solve integration and optimization problems
 
 4. **Penalized likelihood model selection**. This task typically involves two steps. First, one finds the maximum likelihood (ML) estimates for each model separately. Then one uses a penalization term (for example MDL, BIC or AIC) to select one of the models. The problem with this approach is that the initial set of models can be very large. Moreover, many of those models are of not interest and, therefore, computing resources are wasted.
 
-## System Design Questions 
-
-### How would you measure how much users liked videos?
-
-
-
-### How to build a news classifier for articles? 
-
-
-
-### How does Facebook news feed work?
-
-
-
-### How to store most popular tags in the past 24 hours
-
-**Abstract question: top-k items over a recent time window**
-
-1. Maintain a hashmap in memory to store all tags with their counts. Any new event comes, update the count of the tag;
-2. Maintain two heaps, one maximum and one minimum. After the tag count hashmap update, check the updated tag count with the two heap to see if it's a top-K tag by comparing it with the minimum heap. If yes, add it to both heaps and update the datestamp;
-3. The top-k tags are always from the maximum heap;
-4. Add a datestamp value to the items stored in heap, and update the heap every minute to pop out-of-date tags off.
-
-**Algorithm version: top-k frequent elements**
-
-1. Use heap O(Nlog(k));
-2. Use bucket sort O(N).
-
 ## Advanced Problems
+
+### Why big data works?
+
+
+
+
+
+### Why/How embedding works?
+
+Embeddings can come from either **supervised** or **unsupervised** models/algorithms. Depending on different cases, how to construct the embedding and why embedding works may vary. Here I am using a few examples to demonstrate.
+
+Example 1:  Use day of week to predict DAU
+
+- **Deep Encoding**: first convert to one-hot encoding, and then apply a cat2vec model trained by a specific label. For example,  we construct a neural network: The first layer is the embedding layer of $3 \times 1$ taking input from the one-hot encoding, followed by a flatten layer and several dense layers, the output is your interested labels (DAU here). In this case, we represent the high cardinality categorical variable using low dimensional embeddings. Similarly, we can apply same procedure for high cardinality features and map it to the lower dimensional space.
+
+Example 2: image embeddings
+
+- **Auto Encoding**: an autoencoder takes the input as raw features and passes it over dozens of layers and reaches a middle encoding layer (embedding), it then passes on to reconstruct the input through a dozens of layers (usually symmetric). The middle embedding layer is an unsupervised embedding. The input is usually in high dimensional space with very sparse states (e.g., images). This unsupervised procedure maps them into embeddings that is representative and of smaller dimensions, where each dimension (feature) represent a meaningful association with other elements in the embedding matrix.
+- **Transfer Learning Embedding**: deploy an ImageNet trained backbone, and transfer learning/finetune it. Grab the last layer as embedding to represent the label-specific image embeddings.
+
+Example 3: consider the categorical variable gender, in total there are three levels, male, female, unknown, or we can say $\Omega = [unknown, male, female]$. We have a huge dataset of height, weight, strength, etc.
+
+- **Entity Embeddings**: loosely speaking, entity embedding is a vector (a list of real numbers) representation of something (aka an entity). In some sense, it could be feature compression. One case is to take inputs such as heights, weights as features, and passes it through dense layers, the output prediction is the genders. We can think of the last layer as entity embedding of the gender and is a compressed version of all the input layers conditional on gender. 
+
+As a summary, embeddings are good since:
+
+**Dimension Reduction**: an embedding is a relatively low-dimensional space into which you can translate high-dimensional vectors. Embeddings make it easier to do machine learning on large inputs like sparse vectors representing words. Ideally, an embedding captures some of the semantics of the input by placing semantically similar inputs close together in the embedding space. An embedding can be learned and reused across models. 
+
+**Quantifies Dissimilarity Measurement**: another key aspect of embedding is that embedding is **a vector of numerical values to reflect its semantic meaning**. In other words, embeddings make the differences between data measurable and much better measurable. For example, Monday and Sunday is only a day away in reality so we are expecting close level of similarity between them but if using one-hot or numerical values, they are far away from each other in the feature space. Also, Monday and Tuesday only differs the same as Tuesday to Wednesday, although their actual dissimilarity might be different. These issues can be resolved by applying embeddings. 
+
+**Embedding Examples**:  word2vec, nod2vec, image2vec, cat2vec
+
+**Applications of Embeddings**: feature compression ,model features, nearest neighbor search
+
+
+
+## Slightly Tricky Questions
 
 ### Ordinary Least Squares Related
 
@@ -555,23 +602,7 @@ MCMC techniques are often applied to solve integration and optimization problems
 
 - For single $x$ and $y$, $\beta=corr(x, y)\frac{std(y)}{std(x)}$, if we regress y on x, we get $\beta' = corr(x, y)\frac{std(x)}{std(y)}$, the product $\beta \times \beta'$ equals $corr(x, y)^2$ rather than 1. 
 
-### Gradient Descent
 
-- Regular methods: gradient descent, stochastic gradient descent, mini-batch stochastic gradient descent
-
-- Momentum variant: 
-
-  $h^t = \alpha h^{t-1} + \eta g^t$, $w^t=w^{t-1}-h^t$, usually $\alpha=0.9$. This is beneficial since momentum balances local sign changes of gradients
-
-- Nesterov momentum variant: calculate new momentum based new weight location
-
-  $h^t=\alpha h^{t-1} + \eta \nabla L(w^{t-1}-\alpha h^{t-1})$
-
-- Adaptive learning rate variant: as $G_j^t$ always increases, this leads to early stopping ($\epsilon$ is for preventing divided by zero)
-
-  $G_j^t=G_j^{t-1}+(\nabla L_j^t)^2$, $w_j^{t}=w_j^{t-1}-\frac{\eta}{\sqrt{G_j^t+\epsilon}}\nabla L^t_j$
-
-- Adam: combines both momentum and adaptive method
 
 ### Bessel's Correction
 
@@ -581,17 +612,12 @@ The biased sample variance is:$s_n^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dots
 
 The unbiased sample variance is: $s^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dots+(x_n-\bar{x})^2}{n-1}=\frac{\sum^{n}_{i=1}x_i^2}{n-1}-\frac{(\sum^{n}_{i=1}x_i)^2}{(n-1)n}=\bigg(\frac{n}{n-1}\bigg)s_n^2$
 
-### Everything about Hadoop and MapReduce
 
 
-
-### Back Propagation
+### Back Propagation Time Complexity
 
 The time complexity of back propagation is $O(N)$ where $N$ is number of edges in the computation graph.
 
-### TensorFlow
-
-The built-up graph in Python is an object that can be consumed by tf.session() which deploys lower level GPU/CPU computing suite for fast parallel computing. 
 
 
-
+## Everything about Hadoop, Spark and MapReduce

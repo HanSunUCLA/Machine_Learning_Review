@@ -1,8 +1,10 @@
-# Company Systems
+# Company Specific Preparation
 
-Han Sun
+**Han Sun**
 
 
+
+## Pinterest
 
 ### Pinterest Home-Feed
 
@@ -21,6 +23,134 @@ The first layers are the candidate generators that are based on different algori
 ### Pinterest Data Management for Computer Vision
 
 
+
+### What attract me for Pinterest? 
+
+1. roadmap, ML centroid product
+2. abundant data content
+3. uniqueness of Pinterest's features: search, retrieval, relevance
+4. model: transformer
+5. Social network nature: graph
+6. A recommendation engine for idea searching
+7. Very state of the art ML focused -> learned from the Pinterest ML Day
+
+
+
+### Random Notes from Pinterest ML Day
+
+challenge to balance pinner and creator -> long term engagement driving
+
+how to modern long term value for ads (reinforcement learning -> Tomas sampling)
+
+Ads targeting: advertiser to specify their audience - build a bridge between ads and users
+
+ 71% of Pinterest search is 1-3 words: knowledge graph for search
+
+Shopping journey: 
+
+Key difference between homefeed and search: homefeed does not have a query -> deep understanding of both short term and long term interest. Explicit way to model: knowledge graph; Implicit way: deep learning model; optimize for engagement; transformer based embedding; text and image based embedding;
+
+two stage for ads: targeting stage for advertiser; ads relevant model; engagement optimized models
+
+
+
+**Unified visual embedding at Pinterest:**
+
+- visual search engine:
+- daily visual search: 30M, daily active visual search users: 12M
+- embedding-based image classifier
+- PinSage
+- train one embedding for each task -> expensive; train a unified (multi-task) visual embedding for multi-tasks;
+- how to leverage Pinterest images for unified embeddings: transformer (attention is all you need); BERT: pretrained on large scale; An image is worth 16x16 words (vision transformer: image patches are input);
+- ~2.88 avg. labels/images 1329M images, 18k classes; 
+- model training: Kubernetes-like platform; multi-node training; streaming data loader; mixed precision training;
+- hybrid funnel vision transformer;
+- at small size of data: CNN (ResNet101) is better than transformer (hybrid funnel ViT); at large size of data: transformer becomes better;
+- takeaway: multi-task embedding -> improvements benefit all tasks; improving downstream applications == adding new task; billion-scale pretraining + large model is great!
+
+**Representation Learning (PinSAGE)**
+
+- content on Pinterest is either: a person, a business: how to make sense of everything? 
+- content; search query; user;
+- Pin-board graph: bipartite -> understand content better -> Pin Embeddings -> graph neural network; represent a node by embedding; 
+- transformer encoder: self node image+text embedding; 50 neigbhours; random walk; feature 4;
+- what can we do with strong content embedding:
+  - search query: -> 
+- random pins are negative samples
+- online metric: search product retrieval: product long-clicks, product impressions
+- how to learn user embedding? Unsupervised: aggregate use's history content embedding (median); supervised: deep learning approach -> user sequence activity for past year (deal with different length of sequence) -> encode last 255 actions: P2P: click pinID;
+- random walks will pad zeros to it if not enough neighbors are there;
+- negative sampling is hardest thing: instead of pure random, there is some sort of dependence; some medium-hard negative samples are there
+
+**User Journal Modeling on Pinterest Ads** (Yi-Ping Hsu)
+
+data: short-term interest: 20 most recent user engaged pins for past 7 days -> embedding for user
+
+next: more user events; learn native embeddings; time-aware model
+
+long term interest: collect 500 user events from past 3 months;
+
+**TensorFlow Serving**
+
+how to serve sequence features? -> daily sequence generation workflow -> batch processing -> sequence event handler;
+
+model serving latency: transformer has +3ms over attention model;
+
+latency and CPU cost are sensitive to inference batch size;
+
+MKL-DNN for contraction kernel helped reducing fusedMatMul by 40%;
+
+**warm-up queries** reduce latency for newly deployed models (first coupled of minutes latency is very high)
+
+
+
+**Inspired Shopping on Pinterest**
+
+help shoppers find the products to buy effortlessly and with confidence
+
+build new candidate sources and recommenders;
+
+improve ranking by adding conversion objectives;
+
+candidate retrieval: collaborative filtering; multi-representation of entities
+
+two tower model: see photos;
+
+metrics: product detail page engagement
+
+ranking: multi-task learning: P(engagement|query product, user) -> 4 output heads: save, closeups, clicks, long clicks -> CTR, long CTR;
+
+optimize purchases in ranking: w1*engagement score + w2 * conversion score; p(checkout|impression) = p(checkout|click) * p(click|impression)
+
+learn p(checkout|impression) is very challenging since the data is too sparse, ratio is too low. The overall checkout | click is more relevant. Future work include multi-task learning. 
+
+**Data Management**
+
+MapReduce, Spark
+
+Metrics and Monitoring: QPS, data size, ...
+
+600+ signals, 180 users
+
+ML features store: entity type -> entity key -> feature id -> unified feature representation
+
+training datasets: flatten feature representation tabular dataset
+
+EzFlow -> easy to process dataset by standardizing the data processing flow including event parsing, label assignment, downsampling, etc. 
+
+platforms define interfaces: for people to collaborate effectively; for machines to enable common tools -> data interfaces
+
+### What is the unique thing of Pinterest you find
+
+no baby sitting production pipelines and models so I can focus on more interesting and challenging modeling works. 
+
+### Future of Pinterest
+
+understand utilities of pinner and creator, their objectives -> two side recommendation system -> measurement, how the impact is on each party, define success measurement; system and technology, how to test/run long term impact
+
+how to incentivize creators to continue create content: keep creator engaged
+
+## LinkedIn
 
 ### LinkedIn Home-Feed
 
@@ -59,3 +189,102 @@ We optimize for cross entropy loss per objective to train a multi-layer network 
 - Entity attributes are categorized into two parts: relationships to other entities in a taxonomy, and characteristic features not in any taxonomy. For example, a company entity has attributes that refer to other entities, such as members, skills, companies, and industries with identifiers in the corresponding taxonomies; it also has attributes such as a logo, revenue, and URL that do not refer to any other entity in any taxonomy. The former represents edges in the LinkedIn knowledge graph, which will be discussed in the next section. The latter involves feature extraction from text, data ingestion from search engine, data integration from external sources, and crowdsourcing-based methods, etc.
 
   All entity attributes have confidence scores, either computed by a machine learning model, or assigned to be 1.0 if attributes are human-verified. The confidence scores predicted by machines are calibrated using a separate validation set, such that downstream applications can balance the tradeoff between accuracy and coverage easily by interpreting it as probability.
+
+### DoorDash
+
+#### Explore page content generation process
+
+- **Candidate Retrieval:** Fetch data sources from external services that provide the content of the page, such as the Search Service for stores and the Promotion Service for carousels’ metadata. In this case, we only fetch data sources once for the contents on the entire explore page to avoid duplicate calls.
+- **Content Grouping:** Grouping content into a set of collections that can be later used for ranking and presentation, such as grouping stores based on association of carousels or store list on the explore page. 
+- **Ranking:** Rank the entities within each grouped collection. This step involves resolving the correct model ID, generating the feature values, and making a call to the machine learning prediction service to compute the scores for each ranked candidate. 
+- **Experience Decorator:** For the unique set of stores across all collections, we need to hydrate them from external data sources for more user experience-related information, including fetch ETA, delivery fee, images URL, and ratings for stores being displayed.
+- **Layout Processor:** This processor collects all the data being fetched and produces placeholders for different presentation styles, including the explore page, form data models for carousels, store lists, and banners.
+- **Post Processor:** Rank and post-process all the elements, such as carousels and store lists, on the explore page that are being processed so far in a programmatic way to optimize the user experience.
+
+#### Supply and Demand Balance
+
+**Affected parties:**
+
+- For consumers, a lack of Dasher availability during peak demand is more likely to lead to order lateness, longer delivery times, or inability to request a delivery and having to opt for pick up. 
+- For Dashers, a lack of orders leads to lower earnings and longer and more frequent shifts in order to hit personal goals.
+- For merchants, an undersupply of Dashers leads to delayed deliveries, which typically results in cold food and a decreased reorder rate.
+
+**Measurement:** 
+
+- Measure at localized level, e.g., New York at dinner time of a particular weekday; quantified as dasher-hours;
+
+**Forecasting model:**
+
+- time-series regression using gradient boosting - lightGBM;
+- multivariate problem: need to predict the dasher-hours at thousands of localized levels;
+- Extrapolation: for a new city that no historical data is available, use deep learning for latent information extraction (embedding vectors) from features such as population size, traffic conditions, number of available merchants, climate, and geography;
+- counterfactuals: in LightGBM, approximate counterfactuals can be generated by changing the inputs that go into the model at inference time;
+- **Missing confounding variables**: A model lacking knowledge of weather or holidays might learn that high incentives lead to fewer Dasher hours, when the causal relationship is simply missing a covariate link. 
+
+**Optimizer:** 
+
+**Mixed-integer programming:** subjected to business and financial constraints
+
+**Uncertainty:** Our forecasts tend to be noisiest in the [long tail](https://en.wikipedia.org/wiki/Long_tail) of small regions that have few Dashers and few orders. Because the count of these regions is large and they exhibit high variance, if we don’t explicitly account for this uncertainty we are more likely to generate estimates that by chance will have high undersupply, and thus over-allocate incentives to places that exhibit high variance relative to places that have low variance. To address the issue of variance, we generate expected estimates of hours gap from forecasts using a resampling process. By performing resampling, we essentially measure the impact of undersupply in the context of the likelihood of that happening. 
+
+**Unbiased Predictions:** e generally recommend decoupling forecasting components from decision-making components. Most optimization systems work better if the inputs have stable statistical properties where the forecast predictions are unbiased estimates. For example, it can be tempting to start using an asymmetric loss function in forecasting to align with whether we care more about underpredicting or overpredicting the output. Although this approach is perfect for a [variety of problems](https://doordash.engineering/2021/04/28/improving-eta-prediction-accuracy-for-long-tail-events/#:~:text=Our ETAs predict actual delivery,and when the food arrives.&text=If the ETA is underestimated,and customers will be dissatisfied.) where the output of an ML model is immediately used to drive the decision, for problems where the ML predictions are simply another input into a broader optimization engine, it is best to generate unbiased predictions.
+
+#### Improving ETA Prediction Accuracy for Long-tail Events
+
+- Incorporating real-time delivery duration signals
+- Incorporating features that effectively captured long-tail information 
+- Using a custom loss function to train the model used for predicting ETAs
+
+**Outliers vs long tails:** Typically they are less than 1% of the data. On the other hand, tail events are less extreme values compared to outliers but occur with greater frequency. In the online retailer example, an outlier might look like a sudden spike in demand when their product happens to be mentioned in a viral social media post. It’s typically very difficult to anticipate and prepare for these outlier events ahead of time, but manageable because they are so rare. On the other hand, tail events represent occurrences that happen with some amount of regularity (typically 5-10%), such that they should be predictable to some degree. 
+
+**Why?** The primary reason is that we often have a relatively small amount of data in the form of ground truth, factual data that has been observed or measured, and can be analyzed objectively. A second reason why tail events are tough to predict is that it can be difficult to obtain leading indicators which are correlated with the likelihood of a tail event occurring. Here, leading indicators refer to the features that correlate with the outcome we want to predict. An example might be individual customers or organizations placing large orders for group events or parties they’re hosting. Since retailers have relatively few leading indicators of these occurrences, it’s hard to anticipate them in advance.
+
+**balancing speed vs. quality**
+
+**Tail Events:**
+
+- Merchants might be busy with in-store customers 
+- There could be a lot of unexpected traffic on the road
+- The market might be under-supplied, meaning we don’t have enough Dashers on the road to accommodate orders
+- The customer’s building address is either hard to find or difficult to enter
+
+**Metric:** on-time percentage, or the percentage of orders that had an accurate ETA with a +/- margin of error as the key north star metric we wanted to improve;
+
+**Key Points:** 
+
+- Historical features : Instead of directly using marketplace health as a continuous feature, we decided to use a form of target-encoding by splitting up the metric into buckets and taking the average historical delivery duration within that bucket as the new feature. With this approach, we directly helped the model learn that very supply-constrained market conditions are correlated with very high delivery times — rather than relying on the model to learn those patterns from the relatively sparse data available;
+- Real-time features: Instead, we monitor real-time signals which implicitly capture the impact of those events on the outcome variable we care about — in this case, delivery times. For example, we look at average delivery durations over the past 20 minutes at a store level and sub-region level;
+- Custom loss function: a custom asymmetric MSE loss function; by using this approach we need to explicitly state that a late delivery is X times worse than an early delivery.
+
+#### HomeFeed
+
+Retrieval (candidate generator); 1500 -> pre-ranking (logistic regression); 100 -> ranking -> carousals, all restaurants -> reranker/blender/rule-based
+
+**Carousals**: fastest near you; your favorites; most popular local restaurants; other horizontals, groceries, local liquids; try something new; national favorites; new on DoorDash.
+
+**Carousal Ranking:** using a weight for each stores in the carousal and calculate some kind of aggregated level of prediction score;
+
+**Retrieval**: nearest k distance/local, national popular chain stores, past ordered (personalized), nearby popularities, some randomized entities for exploration purposes with less volumes, promoted ones
+
+#### Architecture of the DoorDash ML Platform
+
+**Feature Store** – Low latency store from which Prediction Service reads common features needed for evaluating the model. Supports numerical, categorical, and embedding features.
+
+**Realtime Feature Aggregator** – Listens to a stream of events and aggregates them into features in realtime and stores them in the Feature Store. These are for features such as historic store wait time in the past 30 mins, recent driving speeds, etc.
+
+**Historical Aggregator** – This runs offline to compute features which are longer-term aggregations like 1W, 3M, etc. These calculations run offline. Results are stored in the Feature Warehouse and also uploaded to the Feature Store.
+
+**Prediction Logs** – This stores the predictions made from the prediction service including the features used when the prediction was made and the id of the model used to make the prediction. This is useful for debugging as well as for training data for the next model refresh.
+
+**Model Training Pipeline** – All the production models will be built with this pipeline. The training script must be in the repository. Only this training pipeline will have access to write models into the Model Store to generate a trace of changes going into the Model Store for security and audit. The training pipeline will eventually support auto-retraining of models periodically and auto-deploy/monitoring. This is equivalent to the CI/CD system for ML Models.
+
+**Model Store** – Stores the model files and metadata. Metadata identifies which model is currently active for certain predictions, defines which models are getting shadow traffic.
+
+**Prediction Service** – Serves predictions in production for various use cases. Given a request with request features, context (store id, consumer id, etc) and prediction name (optionally including override model id to support A/B testing), generates the prediction.
+
+#### Retraining Machine Learning Models in the Wake of COVID-19
+
+**Percentile demand model**:  GBM model, quantile loss function, 
+
+**Features**: demand X days ago, the number of new customers gained, and whether a day is a holiday
+
