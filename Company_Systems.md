@@ -12,7 +12,11 @@ The first layers are the candidate generators that are based on different algori
 
 **Two tower model**: the two tower model is used for ranking. One tower takes the pin's content and makes it through several layers to become a pin's embedding. The other tower takes the user features as well as user engaging histories and becomes a user embedding. A final dot-product is between those two embeddings for ranking. 
 
-**Serving**: the pin's embeddings are usually stable so they are precomputed before serving. They are computed in an offline workflow. For fresh pins (within a few hours of uploading), they will need to be computed online, namely, a real-time fresh pin embedding computation. 
+**Features:** user side: user engagement history features + other user features -> user embedding; pin side: pin's recent performance + topic categorical features -> pin embedding
+
+**Serving**: the pin's embeddings are usually stable so they are precomputed before serving. They are computed in an offline workflow. For fresh pins (within a few hours of uploading), they will need to be computed online, namely, a real-time fresh pin embedding computation. User embedding is computed online.
+
+**Metrics:** offline: recall/precision at top k; online: engagement wins: total saves and closeups increase; total hide drop; increased diversity (some kind of measure).
 
 ### Pinterest Ads Recommendation System
 
@@ -20,46 +24,48 @@ The first layers are the candidate generators that are based on different algori
 
 **Ad ranking**: a GBDT classification model is used to predict CTR and descendingly rank notifications. 
 
-### Pinterest Data Management for Computer Vision
+**Lookalike audiences:** regression-based and similarity-based approaches; regression-based approaches perform supervised learning on each seed list and excel at encoding seed list structure (lower bias, higher variance), and similarity-based approaches perform user representation learning which solves data sparsity (lower variance, higher bias); 
 
+for each advertiser, we reference the seed list as positive examples and use sampled monthly active users (MAUs) from the targeting country as negative examples, and build a binary classifier using a multi-layer perceptron (MLP) neural network;
 
+weighted binary cross-entropy loss function: weighted by user engagement (CTR) with min-max normalization;
+
+Audience expansion is essentially a ranking problem: find the most similar *k* users from all eligible candidate users; basically, we rank all those eligible based on their similarity scores against a seed and choose top *k*.
 
 ### What attract me for Pinterest? 
 
-1. roadmap, ML centroid product
-2. abundant data content
+1. ML centered product, state of the art ML focused -> learned from the ML day
+2. abundant large scale data content
 3. uniqueness of Pinterest's features: search, retrieval, relevance
-4. model: transformer
+4. advanced models and infra: models like transformers become available at production
 5. Social network nature: graph
 6. A recommendation engine for idea searching
-7. Very state of the art ML focused -> learned from the Pinterest ML Day
-
-
+7. no baby sitting production pipelines and models so I can focus on more interesting and challenging modeling works
 
 ### Random Notes from Pinterest ML Day
 
-challenge to balance pinner and creator -> long term engagement driving
+#### High level directions
 
-how to modern long term value for ads (reinforcement learning -> Tomas sampling)
+Challenges to balance pinner and creator -> long term engagement driving
+
+How to model long term value for ads (reinforcement learning -> Tomas sampling)
 
 Ads targeting: advertiser to specify their audience - build a bridge between ads and users
 
- 71% of Pinterest search is 1-3 words: knowledge graph for search
+71% of Pinterest search is 1-3 words: knowledge graph for search
 
-Shopping journey: 
+Key difference between homefeed and search: homefeed does not have a query -> deep understanding of both short term and long term interest. Explicit way to model: knowledge graph; Implicit way: deep learning model; optimize for engagement; transformer based embedding; text and image based embedding
 
-Key difference between homefeed and search: homefeed does not have a query -> deep understanding of both short term and long term interest. Explicit way to model: knowledge graph; Implicit way: deep learning model; optimize for engagement; transformer based embedding; text and image based embedding;
-
-two stage for ads: targeting stage for advertiser; ads relevant model; engagement optimized models
+two stage for ads: targeting stage for advertiser; ads relevant models; engagement optimized models
 
 
 
 **Unified visual embedding at Pinterest:**
 
-- visual search engine:
+- visual search engine
 - daily visual search: 30M, daily active visual search users: 12M
 - embedding-based image classifier
-- PinSage
+- PinSAGE
 - train one embedding for each task -> expensive; train a unified (multi-task) visual embedding for multi-tasks;
 - how to leverage Pinterest images for unified embeddings: transformer (attention is all you need); BERT: pretrained on large scale; An image is worth 16x16 words (vision transformer: image patches are input);
 - ~2.88 avg. labels/images 1329M images, 18k classes; 
@@ -140,9 +146,7 @@ EzFlow -> easy to process dataset by standardizing the data processing flow incl
 
 platforms define interfaces: for people to collaborate effectively; for machines to enable common tools -> data interfaces
 
-### What is the unique thing of Pinterest you find
 
-no baby sitting production pipelines and models so I can focus on more interesting and challenging modeling works. 
 
 ### Future of Pinterest
 
@@ -190,7 +194,7 @@ We optimize for cross entropy loss per objective to train a multi-layer network 
 
   All entity attributes have confidence scores, either computed by a machine learning model, or assigned to be 1.0 if attributes are human-verified. The confidence scores predicted by machines are calibrated using a separate validation set, such that downstream applications can balance the tradeoff between accuracy and coverage easily by interpreting it as probability.
 
-### DoorDash
+## DoorDash
 
 #### Explore page content generation process
 
@@ -287,4 +291,61 @@ Retrieval (candidate generator); 1500 -> pre-ranking (logistic regression); 100 
 **Percentile demand model**:  GBM model, quantile loss function, 
 
 **Features**: demand X days ago, the number of new customers gained, and whether a day is a holiday
+
+The model makes thousands of demand predictions a day, one for each region and 30 minute time frame (region-interval). We weigh the importance of a region-interval’s predictions by the number of deliveries that region-interval receives, calculating each-day’s overall weighted demand prediction percentile (WDPP) as follows:
+
+## Airbnb
+
+### Improving Deep Learning for Ranking Stays at Airbnb
+
+- **Architecture:** Can we structure the DNN in a way that allows us to better represent guest preference?
+
+  Two tower structure, one is for listing embedding with listing features as input, another is ideal listing embedding, or user embedding. The optimization goal is to make these two embeddings similar. 
+
+- **Bias:** Can we eliminate some of the systematic biases that exist in the past data?
+
+  Previously ranked higher listings tends to be booked more than others and this goes into a loop. To avoid this bias, introduce a dropout rate for the specific position feature. In training, the position feature is set to 0 with a probability of 15%. This additional information lets the DNN learn the influence of both the position and the quality of the listing on the booking decision of a user. While at inference, this position feature is set as 0. 
+
+- **Cold start**: Can we correct for the disadvantage new listings face given they lack historical data?
+
+  For new listings, we can adopt similarity measure based on geographic location and capacity and apply that to find its similar listings. Then, cold-start unavailable features will be an aggregated measure from these similar neighbors. 
+
+- **Diversity of search results:** Can we avoid the majority preference in past data from overwhelming the results of the future?
+
+  In the re-ranking stage, deploy diversity models to promote diversified listings by manipulating the listings. In Airbnb, a so-called query context embedding is applied. 
+
+### WIDeText: A Multimodal Deep Learning Framework
+
+A unified framework to simplify, expedite, and streamline the development and deployment process for this type of multimodal classification tasks.
+
+**Image channel:** listing images, amenities images;
+
+**Text channel:** image captions, reviews, descriptions;
+
+**Dense channel:** categorical features (country and region), numerical features (number of guests, number of rooms, review scores), amenity types and counts (list of amenities: beds, pillows, microwaves, air-conditions, can come from amenity detection models) -> converted to embeddings by GBDT or FM;
+
+**Wide channel:** existing embeddings generated elsewhere
+
+### Deep Learning at Airbnb
+
+**Offline metrics:** precision @ K: set a rank threshold K, compute % relevant in top K, mean average precision (MAP): average precision @ K, Normalized Discounting Cumulative Gain (NDCG)
+
+**Lambdarank NN:** changed the loss function to a NDCG based loss. The data are separated as a pairwise preference formulation where the listings seen by a booker were used to construct pairs of {booked listing, not-booked listing} as training examples. During training we minimized cross entropy loss of the score difference between the booked listing over the notbooked listing. Weighing each pairwise loss by the difference in NDCG resulting from swapping the positions of the two listings making up the pair. 
+
+**Listing ID:** Listings, on the other hand, are subjected to constraints from the physical world. Even the most popular listing can be booked at most 365 times in an entire year. Typical bookings per listing are much fewer. This is fundamental limitation generates data that is very sparse at the listing level. This overfitting is a direct fallout of this limitation.
+
+**Feature Engineering:** ratios, averaging over windows, numerical feature normalization.
+
+
+
+### Listing Embeddings in Search Ranking (used in similar carousal and personalization)
+
+There exist several different ways of training embeddings. We will focus on a technique called [Negative Sampling](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf). It starts by initializing the embeddings to random vectors, and proceeds to update them via stochastic gradient descent by reading through search sessions in a sliding window manner. At each step the vector of the **central listing** is updated by pushing it closer to vectors of **positive context listings:** listings that were clicked by the same user before and after central listing, within a window of length *m* (*m* = 5)*,* and pushing it away from **negative context listings:** randomly sampled listings (as chances are these are not related to the central listing).
+
+- **Using Booked Listing as Global Context:** We used sessions that end with the user booking the listing (purple listing) to adapt the optimization such that at each step we predict not only the neighboring clicked listings but also the eventually booked listing as well. As the window slides some listings fall in and out of the context set, while the booked listing always remains within it as global context (dotted line) and is used to update the central listing vector.
+- **Adapting to Congregated Search:** Users of online travel booking sites typically search only within a single market, i.e. in the location they want to stay at. As a consequence, for a given *central listing*, the *positive* *context listings* mostly consist of listings from the same market, while the *negative context listings* mostly consists of listings that are not from the same market as they are sampled randomly from entire listing vocabulary. We found that this imbalance leads to learning sub-optimal within-market similarities. To address this issue we propose to add a set of random negatives *Dmn,* sampled from the market of the central listing.
+
+**Cold-start Embeddings.** Every day new listings are created by hosts and made available on Airbnb. At that point these listings do not have an embedding because they were not present our training data. To create embeddings for a new listing we find 3 geographically closest listings that do have embeddings, and are of same listing type and price range as the new listing, and calculate their mean vector.
+
+**Evaluation:** By calculating cosine similarities between embeddings of the clicked listing and the candidate listings we can rank the candidates and observe the rank position of the booked listing.
 

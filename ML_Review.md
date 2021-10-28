@@ -199,7 +199,7 @@ This belongs to the ensemble strategies. Once all K training are done, the final
 
 ### Model Evaluation
 
-**Classification**: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F-score=2\times\frac{precision\times recall}{precision+recall}$; ROC (TP vs FP) curve and AUC (area under curve); Precision-Recall curve, and AUC.
+**Classification**: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F_1-score=2\times\frac{precision\times recall}{precision+recall}$; ROC (TP vs FP) curve and AUC (area under curve); Precision-Recall curve, and AUC.
 
 $AUC_{PvR}-AUC_{ROC}$: $AUC_{PvR}$ highlights the amount of False Positives relative to the class size, whereas $AUC_{ROC}$ better reflects the total amount of False Positives independent of in which class they come up. In summary, AUC of ROC curve is suitable for measuring performance on balanced dataset, while AUC of PoR curve is suitable for imbalanced dataset measurement.
 
@@ -406,7 +406,7 @@ Deep learning is always better than logistic regression as it has way more flexi
 
 **Soft-max**: it applies the standard exponential function to each element of the input vector and normalizes these values by dividing by the sum of all these exponentials; this normalization ensures that the sum of the components of the output vector is 1.
 
-**Weight initialization**: 
+**Weight initialization**: the **He initialization** method is calculated as a random number with a Gaussian probability distribution (G) with a mean of 0.0 and a standard deviation of sqrt(2/n), where *n* is the number of inputs to the node.
 
 **Cross entropy loss**: $L=-\frac{1}{N}\sum^{n}_{i=1}t_i log(p_i)$ 
 
@@ -468,7 +468,41 @@ General category of features: **meta features** (user age, gender, location, job
 
 **Online Learning**: 
 
+**Position Feature:** 
 
+
+
+### Misc.
+
+#### Cold-start
+
+New user, new content
+
+- Content-based filtering: adding content features
+- Ask new user to provide their interest through UI
+- Join multi-device data through cache and session ID
+- Aggregated from similar entitites
+
+#### Downsampling
+
+- Uniformly downsample the major class distribution -> might underfit due to loss of information;
+- Tomek links are pairs of very close instances, but of opposite classes. Removing the instances of the majority class of each pair increases the space between the two classes, facilitating the classification process.
+
+
+
+#### User Engagement Measure
+
+new user retention, increasing session length, number of session
+
+#### Multi-objective Learning
+
+
+
+#### Calibration
+
+**A transfer layer that maps ranking optimized probabilities to empirical rates**
+
+The relationship of whether we are over/under-predicting is given through calibration, a post-processing technique used to improve probability estimation of a learner. There are a number of techniques that can be used like Platt Scaling, isotonic regression or downsampling correction. For binary classification, calibration measures the relationship between the observed behavior (e.g., empirical click-through rate) and the predicted behavior. 
 
 ## Natural Language Processing
 
