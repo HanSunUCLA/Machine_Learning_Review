@@ -4,7 +4,7 @@
 
 
 
-## Learning Theory
+## Statistics Learning Theory
 
 ### Bias vs. Variance
 
@@ -64,12 +64,6 @@ Entropy is the number of bits required to transmit a randomly selected event fro
 
 **Bayesian:** unknown quantities are treated probabilistically and the state of the world can always be updated. Data are observed from the realized sample. Parameters are unknown and described probabilistically. It is the data which are fixed.
 
-### Precision Accuracy Recall and AUC
-
-**Precision vs Accuracy** : accuracy consists of trueness (proximity of measurement results to the true value) and precision (repeatability or reproducibility of the measurement) -> Precision measures the same as bias.
-
-
-
 ## Practical Procedures
 
 ### Deal with Missing Data
@@ -89,57 +83,15 @@ Ways to detect: training/testing split; large model weights in linear models can
 
 For imbalanced dataset, data sampling is needed for training the model. 
 
-- **Down-sampling (Candidate sampling)**: down-sample the larger population of the training data.  The simplest way is to conduct uniform downsampling. Fancy way is noise contrastive estimation which conduct the downsample based on a prior information;
+- **Down-sampling (candidate sampling)**: down-sample the larger population of the training data.  The simplest way is to conduct uniform downsampling. Fancy way is noise contrastive estimation which conduct the downsample based on a prior information;
 - **Up-sampling (data augmentation)**: up-sample the less populated group. This is basically to generate synthetic data at proximity of the existing data. It can also be done through direct duplication. Image transformation is a perfect example;
 - **Add class weight**: the second option is to leverage the class weights parameter during the fit model process. For each class in the target, a weightage is assigned. The minority class will get more weightage when compared to the majority ones. 
 
 ### Identify Outliers
 
-- Extreme value analysis: plot the histogram of individual features and exclude data points that is 3 standard deviation away if the data is Gaussian like. 
-- Cluster based: use k-means to cluster data. Exclude data points that are too far away from its centroid. 
+- Extreme value analysis: plot the histogram of individual features and exclude data points that is three standard deviation away if the data is Gaussian-like;
+- Cluster based: use k-means to cluster data. Exclude data points that are too far away from its centroid;
 - Use robust models such as LASSO, ridge and decision tree.
-
-### Curse of Dimensionality
-
-The distance measure increases as number of dimension grows and the feature space becomes sparse. The effects include: 1) the resulting lower data density requires more observations to keep the average distance between data points the same. In other words, supervised learning becomes more difficult because predictions for new samples are less likely to be based on learning from similar training features; 2) the variance increases as they get more opportunity to overfit to noise in more dimensions, resulting in poor generalization performance.
-
-**Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space.
-
-To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data); 2) convert to neural network embeddings.
-
-### Why $L_1$ Norm is More Sparse than $L_2$
-
-Consider a simple x-y plane, the solution without the regularizer will be a line. As we add the $L_1$/$L_2$ norm in, we are essentially adding a soft condition to limit those values. $L_1=|x|+|y|$ and $L_2=x^2 + y^2$. On the plane, the $L_1$ norm looks like a tilted square (in high dimension space, it will be an octahedron) while the $L_2$ norm is circle when we set them equal to some constant. The solution with regularizers is as if we increase those two shapes until they insect with the original solution line. So most likely the $L_1$ square will touch the solution line at its tip while the $L_2$ circle touches it at arbitrary point.
-
-**Why not $L_3$, $L_4$ norm**,  first of all, all norms that are second differentiable at the origin will be locally equivalent to each other, of which $L_2$ is standard. For all the others, $L_1$ reproduces their behavior. A linear combination of of an $L_1$ and $L_2$ norm (**elastic net**) approximates any norm to second order at the norm and that is what matters most for regression without outlying residuals.
-
-### Simpson's Paradox
-
-A statistical scenario that leads to that the overall trend disappeared after splitting data into groups. It makes resampling very difficult since different resampling data tends to give different conclusions. This is often caused by a lurking variable that is hidden. This lurking variable divides the whole dataset into different distributions. 
-
-### Is the Coin Flipping Fair? and Coin Flipping
-
-Suppose the coin is tossed 10 times and 8 heads are observed:
-
-**P-value approach**: $H_0$: null hypothesis, $p=0.5$, $H_1$: alternative hypothesis, $p > 0.5$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055$. If we define the "small" be $\alpha=0.05$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5$ which you need to do a two tail test. 
-
-If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
-
-**Binomial distribution**: after n flips, what the probability is $P(n,k,p)$
-
-**Probability of number of heads before first tail**: $P(e_{1..k-1}=head, e_{k}=tail)=p^{k-1}(1-p)$. Its expectation can be calculated as $\sum_{k=1}^{\infty}=p^{k-1}(1-p)=1/p$. This is known as the **geometric distribution**. 
-
-**Multinomial distribution**: instead of coin flipping, say we are playing a dice with k faces. The probability of all different dices faces at n trials is $P(n, k, p)$.
-
-**Bernoulli distribution**: if the coin is only flipped once
-
-### Expected Number of Occurrence
-
-Suppose you hear 2 loved songs in the past 8 minutes, what is the probability of hearing another one in the next 5 minutes.
-
-**Poisson distribution**: $P(k \ events \ in \ interval \ t) = \frac{(rt)^k e^{-rt}}{k!}$
-
-$$1-\frac{(2/8)^1 e^{-2/8}}{1!}=1-0.19=0.81$$
 
 ### Feature Selection
 
@@ -195,13 +147,17 @@ This belongs to the ensemble strategies. Once all K training are done, the final
 
 #### Nested cross-validation
 
+The procedure involves treating model hyperparameter optimization as part of the model itself and evaluating it within the broader k-fold cross-validation procedure for evaluating models for comparison and selection.
 
+As such, the k-fold cross-validation procedure for model hyperparameter optimization is nested inside the *k*-fold cross-validation procedure for model selection. The use of two cross-validation loops also leads the procedure to be called “*double cross-validation*.”
 
 ### Model Evaluation
 
 **Classification**: confusion matrix for multi-class; for binary problem: $precision=\frac{TP}{TP+FP}$, $recall=\frac{TP}{TP+FN}$, a measure that combines them is $F_1-score=2\times\frac{precision\times recall}{precision+recall}$; ROC (TP vs FP) curve and AUC (area under curve); Precision-Recall curve, and AUC.
 
 $AUC_{PvR}-AUC_{ROC}$: $AUC_{PvR}$ highlights the amount of False Positives relative to the class size, whereas $AUC_{ROC}$ better reflects the total amount of False Positives independent of in which class they come up. In summary, AUC of ROC curve is suitable for measuring performance on balanced dataset, while AUC of PoR curve is suitable for imbalanced dataset measurement.
+
+**Precision vs Accuracy** : accuracy consists of trueness (proximity of measurement results to the true value) and precision (repeatability or reproducibility of the measurement) -> Precision measures the same as bias.
 
 **Regression**: $RMSE=\sqrt{\frac{\sum_{t=1}^{T}(y_t-\hat{y_t})^2}{T}}$; $R^2$, it ranges from zero to one, with zero indicating that the proposed model does not improve prediction over the mean model, and one indicating perfect prediction. Improvement in the regression model results in proportional increases in R-squared.
 
@@ -216,7 +172,53 @@ In hypothesis testing, the null hypothesis is assumed to be true, and unless the
 
 P-value is type I error. Probability of a type I error can be held at some (preferably small level) while decreasing the probability of a type II error by increasing the sample size. 
 
-#### Logistic Regression vs. SVMs
+
+
+## Genearal Questions
+
+### Curse of Dimensionality
+
+The distance measure increases as number of dimension grows and the feature space becomes sparse. The effects include: 1) the resulting lower data density requires more observations to keep the average distance between data points the same. In other words, supervised learning becomes more difficult because predictions for new samples are less likely to be based on learning from similar training features; 2) the variance increases as they get more opportunity to overfit to noise in more dimensions, resulting in poor generalization performance.
+
+**Possible cause**: 1) high cardinality categorical variables would introduce numerous amount of one-hot encoding features; 2) too many features in the original space.
+
+To counter, general approach is to apply dimension reduction techniques such as PCA, autoencoder. For specific high cardinality categorical variables issue, various of encoding algorithms based on correlation of such categorical attributes to the target or class variables could be used: 1) supervised ratio, $v_i = p_i/t_i$; 2) weight of evidence, $v_i=log \frac{p_i/p}{n_i/n}$(better for imbalanced data); 2) convert to neural network embeddings.
+
+### Why $L_1$ Norm is More Sparse than $L_2$
+
+Consider a simple x-y plane, the solution without the regularizer will be a line. As we add the $L_1$/$L_2$ norm in, we are essentially adding a soft condition to limit those values. $L_1=|x|+|y|$ and $L_2=x^2 + y^2$. On the plane, the $L_1$ norm looks like a tilted square (in high dimension space, it will be an octahedron) while the $L_2$ norm is circle when we set them equal to some constant. The solution with regularizers is as if we increase those two shapes until they insect with the original solution line. So most likely the $L_1$ square will touch the solution line at its tip while the $L_2$ circle touches it at arbitrary point.
+
+**Why not $L_3$, $L_4$ norm**,  first of all, all norms that are second differentiable at the origin will be locally equivalent to each other, of which $L_2$ is standard. For all the others, $L_1$ reproduces their behavior. A linear combination of of an $L_1$ and $L_2$ norm (**elastic net**) approximates any norm to second order at the norm and that is what matters most for regression without outlying residuals.
+
+### Simpson's Paradox
+
+A statistical scenario that leads to that the overall trend disappeared after splitting data into groups. It makes resampling very difficult since different resampling data tends to give different conclusions. This is often caused by a lurking variable that is hidden. This lurking variable divides the whole dataset into different distributions. 
+
+### Is the Coin Flipping Fair? and Coin Flipping
+
+Suppose the coin is tossed 10 times and 8 heads are observed:
+
+**P-value approach**: $H_0$: null hypothesis, $p=0.5$, $H_1$: alternative hypothesis, $p > 0.5$: the p-value is the probability of the observed outcome or something more extreme than the observed outcome, computed under the assumption that the null hypothesis is true (type 1 error). Under the fair assumption, $p=p(8 heads) + p(9 heads) + p(10 heads) = 0.055$. If we define the "small" be $\alpha=0.05$, which is smaller than p value, you would say 8 heads in 10 tosses is not enough evidence to conclude that the coin is not fair. The above mentioned is a one-tail test. You could also assume $H_1: p \neq 0.5$ which you need to do a two tail test. 
+
+If $H_1$ is changed to $p=0.7$, we can calculate the type II error. $p=1 - (p(8 heads) + p(9 heads) + p(10 heads) )=0.617$
+
+**Binomial distribution**: after n flips, what the probability is $P(n,k,p)$
+
+**Probability of number of heads before first tail**: $P(e_{1..k-1}=head, e_{k}=tail)=p^{k-1}(1-p)$. Its expectation can be calculated as $\sum_{k=1}^{\infty}=p^{k-1}(1-p)=1/p$. This is known as the **geometric distribution**. 
+
+**Multinomial distribution**: instead of coin flipping, say we are playing a dice with k faces. The probability of all different dices faces at n trials is $P(n, k, p)$.
+
+**Bernoulli distribution**: if the coin is only flipped once
+
+### Expected Number of Occurrence
+
+Suppose you hear 2 loved songs in the past 8 minutes, what is the probability of hearing another one in the next 5 minutes.
+
+**Poisson distribution**: $P(k \ events \ in \ interval \ t) = \frac{(rt)^k e^{-rt}}{k!}$
+
+$$1-\frac{(2/8)^1 e^{-2/8}}{1!}=1-0.19=0.81$$
+
+### Logistic Regression vs. SVMs
 
  The fundamental difference is that SVM minimizes hinge loss while logistic regression minimizes logistic loss which implies: 1) logistic loss diverges faster than hinge loss. So, in general, it will be more sensitive to outliers; 2) logistic loss does not go to zero even if the point is classified sufficiently confidently. This might lead to minor degradation in accuracy. Try logistic regression first and see how you do with that simpler model. If logistic regression fails and you have reason to believe your data won’t be linearly separable, try an SVM with a non-linear kernel like a Radial Basis Function (RBF).
 
@@ -313,7 +315,7 @@ Rotate the data to project the original feature into a new space where all featu
 
 ### Linear Discriminative Analysis
 
-
+TBF.
 
 ### Gaussian Mixture Model
 
@@ -378,7 +380,7 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 ### Gaussian Process Regression
 
-
+TBF.
 
 
 
@@ -386,7 +388,7 @@ A cluster then satisfies two properties: 1) all points within the cluster are mu
 
 ### AdaBoost for Face Recognition
 
-
+TBF.
 
 ### Deep Learning
 
@@ -576,7 +578,7 @@ MCMC techniques are often applied to solve integration and optimization problems
 
 ### Why big data works?
 
-
+TBF.
 
 
 
@@ -609,7 +611,13 @@ As a summary, embeddings are good since:
 
 
 
-## Slightly Tricky Questions
+### Distributed K-Means
+
+TBF.
+
+
+
+## Tricky Questions
 
 ### Ordinary Least Squares Related
 
@@ -653,5 +661,3 @@ The unbiased sample variance is: $s^2=\frac{(x_1-\bar{x})^2+(x_2-\bar{x})^2+\dot
 The time complexity of back propagation is $O(N)$ where $N$ is number of edges in the computation graph.
 
 
-
-## Everything about Hadoop, Spark and MapReduce

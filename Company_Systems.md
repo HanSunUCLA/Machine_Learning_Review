@@ -1,4 +1,4 @@
-# Company Specific Preparation
+# Machine Learning Systems at Big Companies
 
 **Han Sun**
 
@@ -22,7 +22,7 @@ The first layers are the candidate generators that are based on different algori
 
 **Automatic bid**: similar to Yahoo's programmatic bid, the bid price is adjusted automatically in real-time (through control) to achieve the advertiser's goal. For a given ad group, the loss auction data is used to compute how much more it increase so that it can win the bid. Similarly, for all winning auctions, we could calculate the minimum bid decrease to lose that auction. Combining those two cumulative counts, we can recommend the bid change corresponding to highest winning auctions to advertisers. 
 
-**Ad ranking**: a GBDT classification model is used to predict CTR and descendingly rank notifications. 
+**Ads ranking**: a GBDT classification model is used to predict CTR and descendingly rank notifications. 
 
 **Lookalike audiences:** regression-based and similarity-based approaches; regression-based approaches perform supervised learning on each seed list and excel at encoding seed list structure (lower bias, higher variance), and similarity-based approaches perform user representation learning which solves data sparsity (lower variance, higher bias); 
 
@@ -32,7 +32,7 @@ weighted binary cross-entropy loss function: weighted by user engagement (CTR) w
 
 Audience expansion is essentially a ranking problem: find the most similar *k* users from all eligible candidate users; basically, we rank all those eligible based on their similarity scores against a seed and choose top *k*.
 
-### What attract me for Pinterest? 
+### What Attract Me for Pinterest? 
 
 1. ML centered product, state of the art ML focused -> learned from the ML day
 2. abundant large scale data content
@@ -57,8 +57,6 @@ Ads targeting: advertiser to specify their audience - build a bridge between ads
 Key difference between homefeed and search: homefeed does not have a query -> deep understanding of both short term and long term interest. Explicit way to model: knowledge graph; Implicit way: deep learning model; optimize for engagement; transformer based embedding; text and image based embedding
 
 two stage for ads: targeting stage for advertiser; ads relevant models; engagement optimized models
-
-
 
 **Unified visual embedding at Pinterest:**
 
@@ -106,13 +104,11 @@ latency and CPU cost are sensitive to inference batch size;
 
 MKL-DNN for contraction kernel helped reducing fusedMatMul by 40%;
 
-**warm-up queries** reduce latency for newly deployed models (first coupled of minutes latency is very high)
-
-
+**warm-up queries** reduce latency for newly deployed models (first coupled of minutes latency is very high).
 
 **Inspired Shopping on Pinterest**
 
-help shoppers find the products to buy effortlessly and with confidence
+help shoppers find the products to buy effortlessly and with confidence;
 
 build new candidate sources and recommenders;
 
@@ -146,13 +142,13 @@ EzFlow -> easy to process dataset by standardizing the data processing flow incl
 
 platforms define interfaces: for people to collaborate effectively; for machines to enable common tools -> data interfaces
 
-
-
 ### Future of Pinterest
 
 understand utilities of pinner and creator, their objectives -> two side recommendation system -> measurement, how the impact is on each party, define success measurement; system and technology, how to test/run long term impact
 
 how to incentivize creators to continue create content: keep creator engaged
+
+
 
 ## LinkedIn
 
@@ -193,6 +189,8 @@ We optimize for cross entropy loss per objective to train a multi-layer network 
 - Entity attributes are categorized into two parts: relationships to other entities in a taxonomy, and characteristic features not in any taxonomy. For example, a company entity has attributes that refer to other entities, such as members, skills, companies, and industries with identifiers in the corresponding taxonomies; it also has attributes such as a logo, revenue, and URL that do not refer to any other entity in any taxonomy. The former represents edges in the LinkedIn knowledge graph, which will be discussed in the next section. The latter involves feature extraction from text, data ingestion from search engine, data integration from external sources, and crowdsourcing-based methods, etc.
 
   All entity attributes have confidence scores, either computed by a machine learning model, or assigned to be 1.0 if attributes are human-verified. The confidence scores predicted by machines are calibrated using a separate validation set, such that downstream applications can balance the tradeoff between accuracy and coverage easily by interpreting it as probability.
+  
+  
 
 ## DoorDash
 
@@ -292,7 +290,9 @@ Retrieval (candidate generator); 1500 -> pre-ranking (logistic regression); 100 
 
 **Features**: demand X days ago, the number of new customers gained, and whether a day is a holiday
 
-The model makes thousands of demand predictions a day, one for each region and 30 minute time frame (region-interval). We weigh the importance of a region-interval’s predictions by the number of deliveries that region-interval receives, calculating each-day’s overall weighted demand prediction percentile (WDPP) as follows:
+The model makes thousands of demand predictions a day, one for each region and 30 minute time frame (region-interval). We weigh the importance of a region-interval’s predictions by the number of deliveries that region-interval receives, calculating each-day’s overall weighted demand prediction percentile (WDPP).
+
+
 
 ## Airbnb
 
@@ -335,8 +335,6 @@ A unified framework to simplify, expedite, and streamline the development and de
 **Listing ID:** Listings, on the other hand, are subjected to constraints from the physical world. Even the most popular listing can be booked at most 365 times in an entire year. Typical bookings per listing are much fewer. This is fundamental limitation generates data that is very sparse at the listing level. This overfitting is a direct fallout of this limitation.
 
 **Feature Engineering:** ratios, averaging over windows, numerical feature normalization.
-
-
 
 ### Listing Embeddings in Search Ranking (used in similar carousal and personalization)
 
